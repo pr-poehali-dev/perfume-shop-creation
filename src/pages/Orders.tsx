@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import OrderLoginForm from '@/components/orders/OrderLoginForm';
 import OrdersHeader from '@/components/orders/OrdersHeader';
@@ -16,6 +16,9 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<string>('Все');
+  const [sortBy, setSortBy] = useState<string>('date-desc');
   const { toast } = useToast();
 
   const handleLogin = async () => {
@@ -75,6 +78,25 @@ const Orders = () => {
       loadOrders(savedPassword);
     }
   }, []);
+
+  const filteredOrders = useMemo(() => {
+    return orders
+      .filter(order => {
+        const matchSearch = !searchQuery ||
+          order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order.customerPhone.includes(searchQuery) ||
+          (order.customerEmail && order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()));
+        const matchStatus = filterStatus === 'Все' || order.status === filterStatus;
+        return matchSearch && matchStatus;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'date-desc') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (sortBy === 'date-asc') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        if (sortBy === 'total-desc') return b.totalAmount - a.totalAmount;
+        if (sortBy === 'total-asc') return a.totalAmount - b.totalAmount;
+        return 0;
+      });
+  }, [orders, searchQuery, filterStatus, sortBy]);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -220,8 +242,45 @@ const Orders = () => {
 
       <main className="container mx-auto px-4 py-8">
         <OrdersStatistics orders={orders} />
+        
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            type="text"
+            placeholder="Поиск по имени, телефону, email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          >
+            <option value="Все">Все статусы</option>
+            <option value="Новый">Новый</option>
+            <option value="В обработке">В обработке</option>
+            <option value="Доставляется">Доставляется</option>
+            <option value="Завершён">Завершён</option>
+            <option value="Отменён">Отменён</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          >
+            <option value="date-desc">Новые первые</option>
+            <option value="date-asc">Старые первые</option>
+            <option value="total-desc">Сумма (убыв.)</option>
+            <option value="total-asc">Сумма (возр.)</option>
+          </select>
+        </div>
+
+        <div className="mb-4 text-muted-foreground">
+          Найдено заказов: <span className="font-semibold text-foreground">{filteredOrders.length}</span> из {orders.length}
+        </div>
+        
         <OrdersList
-          orders={orders}
+          orders={filteredOrders}
           onStatusChange={handleStatusChange}
           onEdit={handleEditOrder}
           onDelete={handleDeleteOrder}

@@ -23,15 +23,32 @@ const OrderCard = ({ order, onStatusChange, onEdit, onDelete }: OrderCardProps) 
     });
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Новый': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'В обработке': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'Доставляется': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'Завершён': return 'bg-green-100 text-green-700 border-green-200';
+      case 'Отменён': return 'bg-red-100 text-red-700 border-red-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg">Заказ {order.orderNumber}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-xl">Заказ #{order.orderNumber}</CardTitle>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                {order.status}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+              <Icon name="Clock" size={14} />
               {formatDate(order.createdAt)}
-            </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Select value={order.status} onValueChange={(value) => onStatusChange(order.id, value)}>
@@ -39,10 +56,11 @@ const OrderCard = ({ order, onStatusChange, onEdit, onDelete }: OrderCardProps) 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Ожидает</SelectItem>
-                <SelectItem value="processing">В обработке</SelectItem>
-                <SelectItem value="completed">Выполнен</SelectItem>
-                <SelectItem value="cancelled">Отменён</SelectItem>
+                <SelectItem value="Новый">Новый</SelectItem>
+                <SelectItem value="В обработке">В обработке</SelectItem>
+                <SelectItem value="Доставляется">Доставляется</SelectItem>
+                <SelectItem value="Завершён">Завершён</SelectItem>
+                <SelectItem value="Отменён">Отменён</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -118,12 +136,33 @@ const OrderCard = ({ order, onStatusChange, onEdit, onDelete }: OrderCardProps) 
           </div>
         </div>
 
-        <div className="flex gap-2 border-t pt-4">
-          <Button onClick={() => onEdit(order)} variant="outline" size="sm">
+        <div className="flex flex-wrap gap-2 border-t pt-4">
+          <Button onClick={() => onEdit(order)} variant="outline" size="sm" className="flex-1 md:flex-none">
             <Icon name="Edit" size={16} className="mr-2" />
             Редактировать
           </Button>
-          <Button onClick={() => onDelete(order.id)} variant="destructive" size="sm">
+          <Button 
+            onClick={() => {
+              const phone = order.customerPhone.replace(/\D/g, '');
+              window.open(`https://wa.me/${phone}`, '_blank');
+            }} 
+            variant="outline" 
+            size="sm"
+            className="flex-1 md:flex-none"
+          >
+            <Icon name="MessageCircle" size={16} className="mr-2" />
+            WhatsApp
+          </Button>
+          <Button 
+            onClick={() => window.location.href = `tel:${order.customerPhone}`}
+            variant="outline" 
+            size="sm"
+            className="flex-1 md:flex-none"
+          >
+            <Icon name="Phone" size={16} className="mr-2" />
+            Позвонить
+          </Button>
+          <Button onClick={() => onDelete(order.id)} variant="destructive" size="sm" className="flex-1 md:flex-none">
             <Icon name="Trash2" size={16} className="mr-2" />
             Удалить
           </Button>

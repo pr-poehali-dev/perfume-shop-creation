@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume } from '@/types/perfume';
 import * as XLSX from 'xlsx';
@@ -17,6 +17,10 @@ const Admin = () => {
   const [editingPerfume, setEditingPerfume] = useState<Perfume | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState<string>('Все');
+  const [filterAvailability, setFilterAvailability] = useState<string>('Все');
+  const [sortBy, setSortBy] = useState<string>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -237,6 +241,28 @@ const Admin = () => {
     }
   };
 
+  const filteredPerfumes = useMemo(() => {
+    return perfumes
+      .filter(p => {
+        const matchSearch = !searchQuery || 
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.brand.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchCategory = filterCategory === 'Все' || p.category === filterCategory;
+        const matchAvailability = filterAvailability === 'Все' || 
+          (filterAvailability === 'В наличии' && p.availability) ||
+          (filterAvailability === 'Нет в наличии' && !p.availability);
+        return matchSearch && matchCategory && matchAvailability;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'date-desc') return (b.id || 0) - (a.id || 0);
+        if (sortBy === 'date-asc') return (a.id || 0) - (b.id || 0);
+        if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        return 0;
+      });
+  }, [perfumes, searchQuery, filterCategory, filterAvailability, sortBy]);
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('adminAuth');
@@ -287,8 +313,52 @@ const Admin = () => {
           isEditing={!!editingPerfume}
         />
 
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <input
+            type="text"
+            placeholder="Поиск по названию или бренду..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          />
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          >
+            <option value="Все">Все категории</option>
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+            <option value="Унисекс">Унисекс</option>
+          </select>
+          <select
+            value={filterAvailability}
+            onChange={(e) => setFilterAvailability(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          >
+            <option value="Все">Все товары</option>
+            <option value="В наличии">В наличии</option>
+            <option value="Нет в наличии">Нет в наличии</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 border rounded-md"
+          >
+            <option value="date-desc">Новые первые</option>
+            <option value="date-asc">Старые первые</option>
+            <option value="name-asc">По названию (А-Я)</option>
+            <option value="price-asc">Цена (возр.)</option>
+            <option value="price-desc">Цена (убыв.)</option>
+          </select>
+        </div>
+
+        <div className="mb-4 text-muted-foreground">
+          Найдено товаров: <span className="font-semibold text-foreground">{filteredPerfumes.length}</span> из {perfumes.length}
+        </div>
+
         <div className="grid gap-4">
-          {perfumes.map((perfume) => (
+          {filteredPerfumes.map((perfume) => (
             <PerfumeCard
               key={perfume.id}
               perfume={perfume}
@@ -297,6 +367,13 @@ const Admin = () => {
             />
           ))}
         </div>
+
+        {filteredPerfumes.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <p className="text-lg">Товары не найдены</p>
+            <p className="text-sm mt-2">Попробуйте изменить параметры поиска</p>
+          </div>
+        )}
       </div>
     </div>
   );

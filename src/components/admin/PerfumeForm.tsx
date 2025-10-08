@@ -25,6 +25,9 @@ interface PerfumeFormProps {
 }
 
 export const PerfumeForm = ({ formData, setFormData, onSubmit, onCancel, isEditing }: PerfumeFormProps) => {
+  const quickFillVolumes = ['30 мл', '50 мл', '75 мл', '100 мл'];
+  const quickFillConcentrations = ['Eau de Parfum', 'Eau de Toilette', 'Parfum', 'Cologne'];
+  
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
@@ -52,8 +55,10 @@ export const PerfumeForm = ({ formData, setFormData, onSubmit, onCancel, isEditi
         <Input
           id="price"
           type="number"
+          min="0"
+          step="100"
           value={formData.price}
-          onChange={(e) => setFormData({...formData, price: parseInt(e.target.value)})}
+          onChange={(e) => setFormData({...formData, price: parseInt(e.target.value) || 0})}
           required
         />
       </div>
@@ -81,6 +86,18 @@ export const PerfumeForm = ({ formData, setFormData, onSubmit, onCancel, isEditi
           placeholder="50 мл"
           required
         />
+        <div className="flex gap-2 mt-2">
+          {quickFillVolumes.map(vol => (
+            <button
+              key={vol}
+              type="button"
+              onClick={() => setFormData({...formData, volume: vol})}
+              className="px-2 py-1 text-xs bg-secondary hover:bg-secondary/80 rounded"
+            >
+              {vol}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div>
@@ -91,6 +108,18 @@ export const PerfumeForm = ({ formData, setFormData, onSubmit, onCancel, isEditi
           onChange={(e) => setFormData({...formData, concentration: e.target.value})}
           placeholder="Eau de Parfum"
         />
+        <div className="flex gap-2 mt-2 flex-wrap">
+          {quickFillConcentrations.map(conc => (
+            <button
+              key={conc}
+              type="button"
+              onClick={() => setFormData({...formData, concentration: conc})}
+              className="px-2 py-1 text-xs bg-secondary hover:bg-secondary/80 rounded"
+            >
+              {conc}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex items-center space-x-2">

@@ -43,48 +43,54 @@ export const AdminHeader = ({
   isEditing
 }: AdminHeaderProps) => {
   return (
-    <div className="flex justify-between items-center mb-8">
-      <h1 className="text-4xl font-bold">Админ-панель</h1>
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={onLogout}>
-          <Icon name="LogOut" size={18} className="mr-2" />
-          Выйти
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isImporting}
-        >
-          <Icon name="FileUp" size={18} className="mr-2" />
-          {isImporting ? 'Загрузка...' : 'Импорт Excel'}
-        </Button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={onFileUpload}
-          className="hidden"
-        />
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg">
-              <Icon name="Plus" size={20} className="mr-2" />
-              Добавить товар
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{isEditing ? 'Редактировать товар' : 'Новый товар'}</DialogTitle>
-            </DialogHeader>
-            <PerfumeForm
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={onSubmit}
-              onCancel={onCancel}
-              isEditing={isEditing}
-            />
-          </DialogContent>
-        </Dialog>
+    <div className="mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <div>
+          <h1 className="text-4xl font-bold">Админ-панель товаров</h1>
+          <p className="text-muted-foreground mt-1">Управление каталогом парфюмерии</p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={onLogout} size="sm">
+            <Icon name="LogOut" size={16} className="mr-2" />
+            Выйти
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImporting}
+          >
+            <Icon name="FileUp" size={16} className="mr-2" />
+            {isImporting ? 'Загрузка...' : 'Импорт Excel'}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={onFileUpload}
+            className="hidden"
+          />
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Icon name="Plus" size={18} className="mr-2" />
+                Добавить товар
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{isEditing ? 'Редактировать товар' : 'Новый товар'}</DialogTitle>
+              </DialogHeader>
+              <PerfumeForm
+                formData={formData}
+                setFormData={setFormData}
+                onSubmit={onSubmit}
+                onCancel={onCancel}
+                isEditing={isEditing}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

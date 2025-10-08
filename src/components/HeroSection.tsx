@@ -8,7 +8,7 @@ interface HeroSectionProps {
 const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-background to-amber-500/10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/10 via-background to-gray-800/10" />
       
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-72 h-72 bg-rose-500 rounded-full blur-3xl animate-pulse" />
@@ -23,7 +23,7 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
               <span className="text-sm font-medium text-rose-700 dark:text-rose-300">Эксклюзивная коллекция 2024</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
               Искусство
               <br />
               Парфюмерии
@@ -38,7 +38,7 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white px-10 py-6 text-lg shadow-xl"
+                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-10 py-6 text-lg shadow-xl"
                 onClick={() => scrollToSection('catalog')}
               >
                 <Icon name="ShoppingBag" size={20} className="mr-2" />
@@ -59,7 +59,7 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 animate-fade-in">
             <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Icon name="Award" size={28} className="text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Премиум качество</h3>
@@ -67,7 +67,7 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
             </div>
 
             <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-amber-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Icon name="Truck" size={28} className="text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Быстрая доставка</h3>
@@ -75,7 +75,7 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
             </div>
 
             <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-rose-500 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Icon name="Gift" size={28} className="text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Подарочная упаковка</h3>

@@ -13,7 +13,7 @@ interface PerfumeCardProps {
 const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) => {
   return (
     <Card className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 hover:border-accent/30">
-      <div className="aspect-square bg-gradient-to-br from-secondary/40 to-secondary/20 relative overflow-hidden cursor-pointer" onClick={() => onQuickView(perfume)}>
+      <div className="aspect-square bg-gradient-to-br from-gray-800/40 to-gray-900/20 relative overflow-hidden cursor-pointer" onClick={() => onQuickView(perfume)}>
         <div className="absolute inset-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
           <Icon name="Sparkles" size={64} className="text-accent/30 group-hover:text-accent/50 transition-colors" />
         </div>
@@ -46,7 +46,7 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Цена</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+              <p className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                 {perfume.price.toLocaleString()}
                 <span className="text-lg ml-1">₽</span>
               </p>

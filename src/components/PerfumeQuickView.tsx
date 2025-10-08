@@ -23,7 +23,7 @@ const PerfumeQuickView = ({ perfume, isOpen, onClose, onAddToCart }: PerfumeQuic
         </DialogHeader>
         
         <div className="grid md:grid-cols-2 gap-8 mt-6">
-          <div className="aspect-square bg-gradient-to-br from-secondary/40 to-secondary/20 rounded-lg relative overflow-hidden">
+          <div className="aspect-square bg-gradient-to-br from-gray-800/40 to-gray-900/20 rounded-lg relative overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               <Icon name="Sparkles" size={120} className="text-accent/30" />
             </div>
@@ -75,7 +75,7 @@ const PerfumeQuickView = ({ perfume, isOpen, onClose, onAddToCart }: PerfumeQuic
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Цена</p>
-                  <p className="text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  <p className="text-4xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                     {perfume.price.toLocaleString()}
                     <span className="text-2xl ml-2">₽</span>
                   </p>

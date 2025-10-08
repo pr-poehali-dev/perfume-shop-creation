@@ -181,7 +181,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
-              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-rose-200 to-amber-200 bg-clip-text text-transparent">
+              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
                 PARFUMERIE
               </h3>
               <p className="text-rose-100/80 leading-relaxed">

@@ -1,15 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume } from '@/types/perfume';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import Icon from '@/components/ui/icon';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import * as XLSX from 'xlsx';
+import { AdminLogin } from '@/components/admin/AdminLogin';
+import { AdminHeader } from '@/components/admin/AdminHeader';
+import { PerfumeCard } from '@/components/admin/PerfumeCard';
 
 const API_URL = 'https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c';
 const ADMIN_API_URL = 'https://functions.poehali.dev/9ac7bf2c-5f68-4762-89d0-f4b5392107f3';
@@ -21,8 +16,6 @@ const Admin = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPerfume, setEditingPerfume] = useState<Perfume | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -211,10 +204,7 @@ const Admin = () => {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-
+  const handleLogin = async (password: string) => {
     try {
       const response = await fetch(AUTH_API_URL, {
         method: 'POST',
@@ -244,60 +234,29 @@ const Admin = () => {
         description: 'Не удалось подключиться',
         variant: 'destructive'
       });
-    } finally {
-      setAuthLoading(false);
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('adminAuth');
-    setPassword('');
     toast({
       title: 'Выход',
       description: 'Вы вышли из админ-панели'
     });
   };
 
+  const handleDialogChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) resetForm();
+  };
+
+  const handleCancel = () => {
+    setIsDialogOpen(false);
+  };
+
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center">Авторизация</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Label htmlFor="password">Пароль</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Введите пароль"
-                  required
-                  autoFocus
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={authLoading}>
-                {authLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Загрузка...
-                  </>
-                ) : (
-                  <>
-                    <Icon name="Lock" size={18} className="mr-2" />
-                    Войти
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AdminLogin onLogin={handleLogin} />;
   }
 
   if (loading) {
@@ -314,189 +273,28 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="container mx-auto max-w-6xl">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Админ-панель</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleLogout}>
-              <Icon name="LogOut" size={18} className="mr-2" />
-              Выйти
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isImporting}
-            >
-              <Icon name="FileUp" size={18} className="mr-2" />
-              {isImporting ? 'Загрузка...' : 'Импорт Excel'}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            <Dialog open={isDialogOpen} onOpenChange={(open) => {
-              setIsDialogOpen(open);
-              if (!open) resetForm();
-            }}>
-            <DialogTrigger asChild>
-              <Button size="lg">
-                <Icon name="Plus" size={20} className="mr-2" />
-                Добавить товар
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingPerfume ? 'Редактировать товар' : 'Новый товар'}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Название</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="brand">Бренд</Label>
-                  <Input
-                    id="brand"
-                    value={formData.brand}
-                    onChange={(e) => setFormData({...formData, brand: e.target.value})}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="price">Цена (₽)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: parseInt(e.target.value)})}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="category">Категория</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Мужской">Мужской</SelectItem>
-                      <SelectItem value="Женский">Женский</SelectItem>
-                      <SelectItem value="Унисекс">Унисекс</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="volume">Объём</Label>
-                  <Input
-                    id="volume"
-                    value={formData.volume}
-                    onChange={(e) => setFormData({...formData, volume: e.target.value})}
-                    placeholder="50 мл"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="notes">Ноты (через запятую)</Label>
-                  <Input
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    placeholder="Бергамот, Роза, Пачули"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="concentration">Концентрация</Label>
-                  <Input
-                    id="concentration"
-                    value={formData.concentration}
-                    onChange={(e) => setFormData({...formData, concentration: e.target.value})}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="availability"
-                    checked={formData.availability}
-                    onCheckedChange={(checked) => setFormData({...formData, availability: checked as boolean})}
-                  />
-                  <Label htmlFor="availability">В наличии</Label>
-                </div>
-
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1">
-                    {editingPerfume ? 'Обновить' : 'Создать'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Отмена
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-          </div>
-        </div>
+        <AdminHeader
+          onLogout={handleLogout}
+          onFileUpload={handleFileUpload}
+          fileInputRef={fileInputRef}
+          isImporting={isImporting}
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={handleDialogChange}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          isEditing={!!editingPerfume}
+        />
 
         <div className="grid gap-4">
           {perfumes.map((perfume) => (
-            <Card key={perfume.id}>
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span>{perfume.name}</span>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => handleEdit(perfume)}>
-                      <Icon name="Pencil" size={16} className="mr-1" />
-                      Изменить
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(perfume.id)}>
-                      <Icon name="Trash2" size={16} className="mr-1" />
-                      Удалить
-                    </Button>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Бренд</p>
-                    <p className="font-semibold">{perfume.brand}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Цена</p>
-                    <p className="font-semibold">{perfume.price.toLocaleString()} ₽</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Категория</p>
-                    <p className="font-semibold">{perfume.category}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Объём</p>
-                    <p className="font-semibold">{perfume.volume}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-muted-foreground">Ноты</p>
-                    <p className="font-semibold">{perfume.notes.join(', ')}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Наличие</p>
-                    <p className="font-semibold">{perfume.availability ? '✅ В наличии' : '❌ Нет'}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PerfumeCard
+              key={perfume.id}
+              perfume={perfume}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       </div>

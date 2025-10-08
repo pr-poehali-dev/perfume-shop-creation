@@ -377,6 +377,7 @@ const Admin = () => {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         <div className="grid gap-4">

@@ -98,6 +98,14 @@ const Header = ({
               </button>
             </li>
             <li>
+              <button 
+                onClick={() => scrollToSection('wishlist')}
+                className={`text-sm tracking-wider transition-colors ${activeSection === 'wishlist' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Избранное
+              </button>
+            </li>
+            <li>
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
@@ -129,6 +137,7 @@ const Header = ({
               <li><button onClick={() => scrollToSection('about')} className="text-sm tracking-wider">О бренде</button></li>
               <li><button onClick={() => scrollToSection('delivery')} className="text-sm tracking-wider">Доставка</button></li>
               <li><button onClick={() => scrollToSection('contacts')} className="text-sm tracking-wider">Контакты</button></li>
+              <li><button onClick={() => scrollToSection('wishlist')} className="text-sm tracking-wider">Избранное</button></li>
             </ul>
           </div>
         )}

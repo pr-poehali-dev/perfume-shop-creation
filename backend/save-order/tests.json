@@ -1,0 +1,38 @@
+{
+  "tests": [
+    {
+      "name": "Save order successfully",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "name": "Иван Иванов",
+        "phone": "+7 999 123-45-67",
+        "email": "ivan@example.com",
+        "deliveryMethod": "courier",
+        "address": "ул. Тверская, д. 1",
+        "city": "Москва",
+        "postalCode": "123456",
+        "comment": "Позвонить за час",
+        "paymentMethod": "card",
+        "totalAmount": 15500,
+        "deliveryPrice": 500,
+        "items": [
+          {
+            "id": 1,
+            "name": "Test Perfume",
+            "brand": "Test Brand",
+            "quantity": 2,
+            "price": 7500
+          }
+        ]
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "orderNumber": "string",
+        "orderId": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

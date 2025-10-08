@@ -7,6 +7,7 @@ import CatalogSection from '@/components/CatalogSection';
 import InfoSections from '@/components/InfoSections';
 import PerfumeQuickView from '@/components/PerfumeQuickView';
 import CheckoutModal from '@/components/CheckoutModal';
+import WishlistSection from '@/components/WishlistSection';
 import Icon from '@/components/ui/icon';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -188,6 +189,12 @@ const Index = () => {
           onQuickView={handleQuickView}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+        />
+
+        <WishlistSection 
+          perfumes={perfumes}
+          addToCart={addToCart}
+          onQuickView={handleQuickView}
         />
 
         <InfoSections />

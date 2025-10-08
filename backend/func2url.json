@@ -1,4 +1,6 @@
 {
+  "save-order": "https://functions.poehali.dev/f455a892-eab2-4810-a681-80bd25f2e3f1",
+  "get-orders": "https://functions.poehali.dev/fe8d5d8d-ffbc-4b6e-947f-0842449d171d",
   "auth": "https://functions.poehali.dev/681cc67d-089a-4c22-b1f0-80b99aec3e56",
   "perfumes-admin": "https://functions.poehali.dev/9ac7bf2c-5f68-4762-89d0-f4b5392107f3",
   "perfumes": "https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c"

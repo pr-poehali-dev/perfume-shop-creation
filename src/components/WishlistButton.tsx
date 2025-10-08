@@ -28,6 +28,8 @@ const WishlistButton = ({ perfumeId, onToggle }: WishlistButtonProps) => {
     localStorage.setItem('wishlist', JSON.stringify(newWishlist));
     setIsInWishlist(!isInWishlist);
     
+    window.dispatchEvent(new Event('wishlist-updated'));
+    
     if (onToggle) {
       onToggle(perfumeId, !isInWishlist);
     }

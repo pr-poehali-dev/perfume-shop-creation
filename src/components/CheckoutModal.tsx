@@ -35,20 +35,55 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    onOrderComplete();
-    setStep(1);
-    setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      comment: '',
-      deliveryMethod: 'courier',
-      paymentMethod: 'card'
-    });
+  const handleSubmit = async () => {
+    try {
+      const orderData = {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        deliveryMethod: formData.deliveryMethod,
+        address: formData.address,
+        city: formData.city,
+        postalCode: formData.postalCode,
+        comment: formData.comment,
+        paymentMethod: formData.paymentMethod,
+        totalAmount: finalTotal,
+        deliveryPrice: deliveryPrice,
+        items: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          brand: item.brand,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+
+      const response = await fetch('https://functions.poehali.dev/f455a892-eab2-4810-a681-80bd25f2e3f1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (response.ok) {
+        onOrderComplete();
+        setStep(1);
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          address: '',
+          city: '',
+          postalCode: '',
+          comment: '',
+          deliveryMethod: 'courier',
+          paymentMethod: 'card'
+        });
+      }
+    } catch (error) {
+      console.error('Order submission error:', error);
+    }
   };
 
   const deliveryPrice = formData.deliveryMethod === 'courier' ? (totalPrice >= 5000 ? 0 : 500) : 300;

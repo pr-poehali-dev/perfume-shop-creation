@@ -29,6 +29,20 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [wishlist, setWishlist] = useState<number[]>(() => {
+    const saved = localStorage.getItem('wishlist');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const toggleWishlist = (id: number) => {
+    setWishlist(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
 
   useScrollAnimation();
 
@@ -52,6 +66,17 @@ const Index = () => {
     
     fetchPerfumes();
   }, [toast]);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
   const brands = Array.from(new Set(perfumes.map(p => p.brand)));
@@ -189,12 +214,16 @@ const Index = () => {
           onQuickView={handleQuickView}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          wishlist={wishlist}
+          toggleWishlist={toggleWishlist}
         />
 
         <WishlistSection 
           perfumes={perfumes}
           addToCart={addToCart}
           onQuickView={handleQuickView}
+          wishlist={wishlist}
+          toggleWishlist={toggleWishlist}
         />
 
         <InfoSections />

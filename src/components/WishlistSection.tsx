@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -9,38 +9,15 @@ interface WishlistSectionProps {
   perfumes: Perfume[];
   addToCart: (id: number) => void;
   onQuickView: (perfume: Perfume) => void;
+  wishlist: number[];
+  toggleWishlist: (id: number) => void;
 }
 
-const WishlistSection = ({ perfumes, addToCart, onQuickView }: WishlistSectionProps) => {
-  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    const loadWishlist = () => {
-      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-      setWishlistIds(wishlist);
-    };
-
-    loadWishlist();
-
-    const handleStorageChange = () => {
-      loadWishlist();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('wishlist-updated', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('wishlist-updated', handleStorageChange);
-    };
-  }, []);
-
-  const wishlistPerfumes = perfumes.filter(p => wishlistIds.includes(p.id));
+const WishlistSection = ({ perfumes, addToCart, onQuickView, wishlist, toggleWishlist }: WishlistSectionProps) => {
+  const wishlistPerfumes = perfumes.filter(p => wishlist.includes(p.id));
 
   const clearWishlist = () => {
-    localStorage.setItem('wishlist', '[]');
-    setWishlistIds([]);
-    window.dispatchEvent(new Event('wishlist-updated'));
+    wishlistPerfumes.forEach(p => toggleWishlist(p.id));
   };
 
   return (
@@ -92,6 +69,8 @@ const WishlistSection = ({ perfumes, addToCart, onQuickView }: WishlistSectionPr
                 perfume={perfume}
                 onAddToCart={addToCart}
                 onQuickView={onQuickView}
+                wishlist={wishlist}
+                toggleWishlist={toggleWishlist}
               />
             ))}
           </div>

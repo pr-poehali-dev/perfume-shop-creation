@@ -33,20 +33,20 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center px-4">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 py-5 md:px-10 md:py-6 text-base md:text-lg shadow-xl w-full sm:w-auto"
+                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 py-5 md:px-10 md:py-6 text-base md:text-lg shadow-xl w-full sm:w-auto group"
                 onClick={() => scrollToSection('catalog')}
               >
-                <Icon name="ShoppingBag" size={18} className="mr-2" />
+                <Icon name="ShoppingBag" size={18} className="mr-2 group-hover:scale-110 transition-transform" />
                 Перейти в каталог
               </Button>
               
               <Button 
                 size="lg" 
                 variant="outline"
-                className="px-8 py-5 md:px-10 md:py-6 text-base md:text-lg border-2 w-full sm:w-auto"
+                className="px-8 py-5 md:px-10 md:py-6 text-base md:text-lg border-2 w-full sm:w-auto group"
                 onClick={() => scrollToSection('about')}
               >
-                <Icon name="Info" size={18} className="mr-2" />
+                <Icon name="Info" size={18} className="mr-2 group-hover:scale-110 transition-transform" />
                 О нас
               </Button>
             </div>

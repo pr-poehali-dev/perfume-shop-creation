@@ -3,15 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Perfume } from '@/types/perfume';
-import WishlistButton from './WishlistButton';
 
 interface PerfumeCardProps {
   perfume: Perfume;
   onAddToCart: (id: number) => void;
   onQuickView: (perfume: Perfume) => void;
+  wishlist: number[];
+  toggleWishlist: (id: number) => void;
 }
 
-const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) => {
+const PerfumeCard = ({ perfume, onAddToCart, onQuickView, wishlist, toggleWishlist }: PerfumeCardProps) => {
+  const isInWishlist = wishlist.includes(perfume.id);
   return (
     <Card className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 hover:border-accent/30">
       <div className="aspect-square bg-gradient-to-br from-gray-800/40 to-gray-900/20 relative overflow-hidden cursor-pointer" onClick={() => onQuickView(perfume)}>
@@ -24,9 +26,22 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
           </div>
         </div>
         <Badge className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm">{perfume.category}</Badge>
-        <div className="absolute top-4 left-4">
-          <WishlistButton perfumeId={perfume.id} />
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(perfume.id);
+          }}
+          className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-all hover:scale-110 shadow-lg"
+          aria-label={isInWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
+        >
+          <Icon 
+            name="Heart" 
+            size={18} 
+            className={`transition-colors ${
+              isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-600'
+            }`}
+          />
+        </button>
       </div>
       <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
         <div>

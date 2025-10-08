@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume } from '@/types/perfume';
 import Header from '@/components/Header';
@@ -13,6 +13,10 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [recentlyViewed, setRecentlyViewed] = useState<number[]>(() => {
+    const saved = localStorage.getItem('recentlyViewed');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>('Все');
   const [priceRange, setPriceRange] = useState([0, 20000]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -39,19 +43,38 @@ const Index = () => {
   }, [wishlist]);
 
   const toggleWishlist = (id: number) => {
+    const perfume = perfumes.find(p => p.id === id);
+    const isAdding = !wishlist.includes(id);
+    
     setWishlist(prev => 
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
+    
+    toast({
+      title: isAdding ? 'Добавлено в избранное' : 'Удалено из избранного',
+      description: perfume?.name,
+    });
   };
 
   useScrollAnimation();
 
   useEffect(() => {
     const fetchPerfumes = async () => {
+      const cached = sessionStorage.getItem('perfumes-cache');
+      const cacheTime = sessionStorage.getItem('perfumes-cache-time');
+      
+      if (cached && cacheTime && Date.now() - parseInt(cacheTime) < 5 * 60 * 1000) {
+        setPerfumes(JSON.parse(cached));
+        setLoading(false);
+        return;
+      }
+      
       try {
         const response = await fetch('https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c');
         const data = await response.json();
         setPerfumes(data);
+        sessionStorage.setItem('perfumes-cache', JSON.stringify(data));
+        sessionStorage.setItem('perfumes-cache-time', Date.now().toString());
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
         toast({
@@ -78,28 +101,31 @@ const Index = () => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
-  const brands = Array.from(new Set(perfumes.map(p => p.brand)));
-  const volumes = Array.from(new Set(perfumes.map(p => p.volume)));
+  const categories = useMemo(() => ['Все', 'Мужской', 'Женский', 'Унисекс'], []);
+  const brands = useMemo(() => Array.from(new Set(perfumes.map(p => p.brand))), [perfumes]);
+  const volumes = useMemo(() => Array.from(new Set(perfumes.map(p => p.volume))), [perfumes]);
 
-  const filteredPerfumes = perfumes.filter(perfume => {
-    const categoryMatch = selectedCategory === 'Все' || perfume.category === selectedCategory;
-    const priceMatch = perfume.price >= priceRange[0] && perfume.price <= priceRange[1];
-    const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(perfume.brand);
-    const volumeMatch = selectedVolumes.length === 0 || selectedVolumes.includes(perfume.volume);
-    const availabilityMatch = !showOnlyAvailable || perfume.availability;
-    const searchMatch = !searchQuery || 
-      perfume.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      perfume.brand.toLowerCase().includes(searchQuery.toLowerCase());
-    return categoryMatch && priceMatch && brandMatch && volumeMatch && availabilityMatch && searchMatch;
-  }).sort((a, b) => {
-    if (sortBy === 'price-asc') return a.price - b.price;
-    if (sortBy === 'price-desc') return b.price - a.price;
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
-    return 0;
-  });
+  const filteredPerfumes = useMemo(() => {
+    return perfumes.filter(perfume => {
+      const categoryMatch = selectedCategory === 'Все' || perfume.category === selectedCategory;
+      const priceMatch = perfume.price >= priceRange[0] && perfume.price <= priceRange[1];
+      const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(perfume.brand);
+      const volumeMatch = selectedVolumes.length === 0 || selectedVolumes.includes(perfume.volume);
+      const availabilityMatch = !showOnlyAvailable || perfume.availability;
+      const searchMatch = !searchQuery || 
+        perfume.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        perfume.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      return categoryMatch && priceMatch && brandMatch && volumeMatch && availabilityMatch && searchMatch;
+    }).sort((a, b) => {
+      if (sortBy === 'price-asc') return a.price - b.price;
+      if (sortBy === 'price-desc') return b.price - a.price;
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      return 0;
+    });
+  }, [perfumes, selectedCategory, priceRange, selectedBrands, selectedVolumes, showOnlyAvailable, searchQuery, sortBy]);
 
-  const addToCart = (id: number) => {
+  const addToCart = (id: number, showToast = true) => {
+    const perfume = perfumes.find(p => p.id === id);
     const existingItem = cart.find(item => item.id === id);
     if (existingItem) {
       setCart(cart.map(item => 
@@ -108,10 +134,12 @@ const Index = () => {
     } else {
       setCart([...cart, { id, quantity: 1 }]);
     }
-    toast({
-      title: 'Добавлено в корзину',
-      description: 'Товар успешно добавлен',
-    });
+    if (showToast) {
+      toast({
+        title: 'Добавлено в корзину',
+        description: perfume ? `${perfume.name} — ${perfume.price.toLocaleString()} ₽` : 'Товар успешно добавлен',
+      });
+    }
   };
 
   const removeFromCart = (id: number) => {
@@ -133,34 +161,40 @@ const Index = () => {
     quantity: item.quantity
   }));
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = useMemo(() => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0), [cartItems]);
+  const totalItems = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
     setIsMenuOpen(false);
-  };
+  }, []);
 
   const handleQuickView = (perfume: Perfume) => {
     setSelectedPerfume(perfume);
     setIsQuickViewOpen(true);
+    
+    setRecentlyViewed(prev => {
+      const updated = [perfume.id, ...prev.filter(id => id !== perfume.id)].slice(0, 10);
+      localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+      return updated;
+    });
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = useCallback(() => {
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
-  };
+  }, []);
 
-  const handleOrderComplete = () => {
+  const handleOrderComplete = useCallback(() => {
     setCart([]);
     setIsCheckoutOpen(false);
     toast({
       title: 'Заказ оформлен!',
       description: 'Мы свяжемся с вами в ближайшее время',
     });
-  };
+  }, [toast]);
 
   if (loading) {
     return (
@@ -244,7 +278,7 @@ const Index = () => {
         onOrderComplete={handleOrderComplete}
       />
 
-      <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16">
+      <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16" role="contentinfo">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
@@ -256,26 +290,26 @@ const Index = () => {
               </p>
             </div>
 
-            <div>
+            <nav aria-label="Футер навигация">
               <h4 className="text-lg font-bold mb-4 text-amber-200">Навигация</h4>
               <ul className="space-y-2 text-rose-100/80">
-                <li><a href="#home" className="hover:text-white transition-colors">Главная</a></li>
-                <li><a href="#catalog" className="hover:text-white transition-colors">Каталог</a></li>
-                <li><a href="#about" className="hover:text-white transition-colors">О нас</a></li>
-                <li><a href="#delivery" className="hover:text-white transition-colors">Доставка</a></li>
-                <li><a href="#contacts" className="hover:text-white transition-colors">Контакты</a></li>
+                <li><button onClick={() => scrollToSection('home')} className="hover:text-white transition-colors text-left">Главная</button></li>
+                <li><button onClick={() => scrollToSection('catalog')} className="hover:text-white transition-colors text-left">Каталог</button></li>
+                <li><button onClick={() => scrollToSection('about')} className="hover:text-white transition-colors text-left">О нас</button></li>
+                <li><button onClick={() => scrollToSection('delivery')} className="hover:text-white transition-colors text-left">Доставка</button></li>
+                <li><button onClick={() => scrollToSection('contacts')} className="hover:text-white transition-colors text-left">Контакты</button></li>
               </ul>
-            </div>
+            </nav>
 
-            <div>
+            <address className="not-italic">
               <h4 className="text-lg font-bold mb-4 text-amber-200">Контакты</h4>
               <ul className="space-y-2 text-rose-100/80">
-                <li>+7 (495) 123-45-67</li>
-                <li>info@parfumerie.ru</li>
+                <li><a href="tel:+74951234567" className="hover:text-white transition-colors">+7 (495) 123-45-67</a></li>
+                <li><a href="mailto:info@parfumerie.ru" className="hover:text-white transition-colors">info@parfumerie.ru</a></li>
                 <li>Москва, ул. Тверская, д. 1</li>
                 <li>Ежедневно 10:00 — 22:00</li>
               </ul>
-            </div>
+            </address>
           </div>
 
           <div className="border-t border-white/20 pt-8 text-center text-rose-100/60">

@@ -23,6 +23,8 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         value={query}
         onChange={(e) => handleChange(e.target.value)}
         className="pl-10"
+        autoComplete="off"
+        aria-label="Поиск товаров"
       />
       {query && (
         <button

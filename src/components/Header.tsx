@@ -69,11 +69,14 @@ const Header = ({
                 onCheckoutClick={onCheckoutClick}
               />
             </Sheet>
-            <button 
+            <Button
+              variant="ghost" 
+              size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
             >
               <Icon name={isMenuOpen ? "X" : "Menu"} size={24} />
-            </button>
+            </Button>
           </div>
 
           <ul className="hidden md:flex gap-8 items-center">

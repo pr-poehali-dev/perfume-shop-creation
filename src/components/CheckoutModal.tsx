@@ -124,16 +124,21 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Иван Иванов"
+                  required
+                  autoComplete="name"
                 />
               </div>
               <div>
                 <Label htmlFor="phone" className="text-sm md:text-base">Телефон *</Label>
                 <Input
                   id="phone"
+                  type="tel"
                   className="h-10 md:h-11 text-sm md:text-base"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="+7 (999) 123-45-67"
+                  required
+                  autoComplete="tel"
                 />
               </div>
               <div>
@@ -145,6 +150,8 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="example@mail.ru"
+                  required
+                  autoComplete="email"
                 />
               </div>
               <Button 

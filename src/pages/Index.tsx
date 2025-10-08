@@ -173,12 +173,58 @@ const Index = () => {
         onAddToCart={addToCart}
       />
 
-      <footer className="bg-primary text-primary-foreground py-8">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-2">PARFUMERIE</h2>
-          <p className="text-sm opacity-80">
-            © 2024 Все права защищены
-          </p>
+      <footer className="bg-gradient-to-br from-rose-900 via-rose-800 to-amber-900 text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div>
+              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-rose-200 to-amber-200 bg-clip-text text-transparent">
+                PARFUMERIE
+              </h3>
+              <p className="text-rose-100/80 leading-relaxed">
+                Элитная парфюмерия с 1875 года. Откройте мир изысканных ароматов.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4 text-amber-200">Навигация</h4>
+              <ul className="space-y-2 text-rose-100/80">
+                <li><a href="#home" className="hover:text-white transition-colors">Главная</a></li>
+                <li><a href="#catalog" className="hover:text-white transition-colors">Каталог</a></li>
+                <li><a href="#about" className="hover:text-white transition-colors">О нас</a></li>
+                <li><a href="#delivery" className="hover:text-white transition-colors">Доставка</a></li>
+                <li><a href="#contacts" className="hover:text-white transition-colors">Контакты</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4 text-amber-200">Контакты</h4>
+              <ul className="space-y-2 text-rose-100/80">
+                <li>+7 (495) 123-45-67</li>
+                <li>info@parfumerie.ru</li>
+                <li>Москва, ул. Тверская, д. 1</li>
+                <li>Ежедневно 10:00 — 22:00</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4 text-amber-200">Социальные сети</h4>
+              <div className="flex gap-4">
+                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
+                  <Icon name="Instagram" size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
+                  <Icon name="Facebook" size={20} />
+                </a>
+                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
+                  <Icon name="Twitter" size={20} />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/20 pt-8 text-center text-rose-100/60">
+            <p>© 2024 PARFUMERIE. Все права защищены</p>
+          </div>
         </div>
       </footer>
     </div>

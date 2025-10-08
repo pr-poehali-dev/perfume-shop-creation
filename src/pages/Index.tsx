@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { perfumes } from '@/types/perfume';
+import { perfumes, Perfume } from '@/types/perfume';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
 import InfoSections from '@/components/InfoSections';
+import PerfumeQuickView from '@/components/PerfumeQuickView';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -14,6 +15,8 @@ const Index = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedPerfume, setSelectedPerfume] = useState<Perfume | null>(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
 
@@ -67,6 +70,11 @@ const Index = () => {
     setIsMenuOpen(false);
   };
 
+  const handleQuickView = (perfume: Perfume) => {
+    setSelectedPerfume(perfume);
+    setIsQuickViewOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -94,10 +102,18 @@ const Index = () => {
           priceRange={priceRange}
           setPriceRange={setPriceRange}
           addToCart={addToCart}
+          onQuickView={handleQuickView}
         />
 
         <InfoSections />
       </main>
+
+      <PerfumeQuickView
+        perfume={selectedPerfume}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+        onAddToCart={addToCart}
+      />
 
       <footer className="bg-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4 text-center">

@@ -11,6 +11,7 @@ interface CatalogSectionProps {
   priceRange: number[];
   setPriceRange: (range: number[]) => void;
   addToCart: (id: number) => void;
+  onQuickView: (perfume: Perfume) => void;
 }
 
 const CatalogSection = ({
@@ -20,7 +21,8 @@ const CatalogSection = ({
   setSelectedCategory,
   priceRange,
   setPriceRange,
-  addToCart
+  addToCart,
+  onQuickView
 }: CatalogSectionProps) => {
   return (
     <section id="catalog" className="py-20 bg-card">
@@ -73,6 +75,7 @@ const CatalogSection = ({
                   key={perfume.id} 
                   perfume={perfume} 
                   onAddToCart={addToCart}
+                  onQuickView={onQuickView}
                 />
               ))}
             </div>

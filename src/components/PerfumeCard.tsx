@@ -7,14 +7,20 @@ import { Perfume } from '@/types/perfume';
 interface PerfumeCardProps {
   perfume: Perfume;
   onAddToCart: (id: number) => void;
+  onQuickView: (perfume: Perfume) => void;
 }
 
-const PerfumeCard = ({ perfume, onAddToCart }: PerfumeCardProps) => {
+const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) => {
   return (
     <Card className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 hover:border-accent/30">
-      <div className="aspect-square bg-gradient-to-br from-secondary/40 to-secondary/20 relative overflow-hidden">
+      <div className="aspect-square bg-gradient-to-br from-secondary/40 to-secondary/20 relative overflow-hidden cursor-pointer" onClick={() => onQuickView(perfume)}>
         <div className="absolute inset-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
           <Icon name="Sparkles" size={64} className="text-accent/30 group-hover:text-accent/50 transition-colors" />
+        </div>
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+            <Icon name="Eye" size={24} className="text-primary" />
+          </div>
         </div>
         <Badge className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm">{perfume.category}</Badge>
       </div>
@@ -46,14 +52,25 @@ const PerfumeCard = ({ perfume, onAddToCart }: PerfumeCardProps) => {
               </p>
             </div>
           </div>
-          <Button 
-            onClick={() => onAddToCart(perfume.id)}
-            className="w-full bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform"
-            size="lg"
-          >
-            <Icon name="ShoppingCart" size={18} className="mr-2" />
-            В корзину
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={() => onQuickView(perfume)}
+              variant="outline"
+              className="group-hover:scale-105 transition-transform"
+              size="lg"
+            >
+              <Icon name="Eye" size={18} className="mr-2" />
+              Просмотр
+            </Button>
+            <Button 
+              onClick={() => onAddToCart(perfume.id)}
+              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform"
+              size="lg"
+            >
+              <Icon name="ShoppingCart" size={18} className="mr-2" />
+              В корзину
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

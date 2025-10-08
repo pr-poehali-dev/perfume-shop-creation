@@ -11,6 +11,10 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState<string>('Все');
   const [priceRange, setPriceRange] = useState([0, 20000]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedConcentrations, setSelectedConcentrations] = useState<string[]>([]);
+  const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
+  const [sortBy, setSortBy] = useState<string>('default');
   const [cart, setCart] = useState<{id: number, quantity: number}[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
@@ -19,11 +23,21 @@ const Index = () => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
+  const brands = Array.from(new Set(perfumes.map(p => p.brand)));
+  const concentrations = Array.from(new Set(perfumes.map(p => p.concentration).filter(Boolean)));
 
   const filteredPerfumes = perfumes.filter(perfume => {
     const categoryMatch = selectedCategory === 'Все' || perfume.category === selectedCategory;
     const priceMatch = perfume.price >= priceRange[0] && perfume.price <= priceRange[1];
-    return categoryMatch && priceMatch;
+    const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(perfume.brand);
+    const concentrationMatch = selectedConcentrations.length === 0 || (perfume.concentration && selectedConcentrations.includes(perfume.concentration));
+    const availabilityMatch = !showOnlyAvailable || perfume.availability;
+    return categoryMatch && priceMatch && brandMatch && concentrationMatch && availabilityMatch;
+  }).sort((a, b) => {
+    if (sortBy === 'price-asc') return a.price - b.price;
+    if (sortBy === 'price-desc') return b.price - a.price;
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    return 0;
   });
 
   const addToCart = (id: number) => {
@@ -101,6 +115,16 @@ const Index = () => {
           setSelectedCategory={setSelectedCategory}
           priceRange={priceRange}
           setPriceRange={setPriceRange}
+          brands={brands}
+          selectedBrands={selectedBrands}
+          setSelectedBrands={setSelectedBrands}
+          concentrations={concentrations}
+          selectedConcentrations={selectedConcentrations}
+          setSelectedConcentrations={setSelectedConcentrations}
+          showOnlyAvailable={showOnlyAvailable}
+          setShowOnlyAvailable={setShowOnlyAvailable}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
           addToCart={addToCart}
           onQuickView={handleQuickView}
         />

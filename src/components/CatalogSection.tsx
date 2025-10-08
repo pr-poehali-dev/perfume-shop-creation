@@ -1,5 +1,9 @@
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Icon from '@/components/ui/icon';
 import PerfumeCard from './PerfumeCard';
 import { Perfume } from '@/types/perfume';
 
@@ -10,6 +14,16 @@ interface CatalogSectionProps {
   setSelectedCategory: (category: string) => void;
   priceRange: number[];
   setPriceRange: (range: number[]) => void;
+  brands: string[];
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
+  concentrations: string[];
+  selectedConcentrations: string[];
+  setSelectedConcentrations: (concentrations: string[]) => void;
+  showOnlyAvailable: boolean;
+  setShowOnlyAvailable: (show: boolean) => void;
+  sortBy: string;
+  setSortBy: (sort: string) => void;
   addToCart: (id: number) => void;
   onQuickView: (perfume: Perfume) => void;
 }
@@ -21,9 +35,34 @@ const CatalogSection = ({
   setSelectedCategory,
   priceRange,
   setPriceRange,
+  brands,
+  selectedBrands,
+  setSelectedBrands,
+  concentrations,
+  selectedConcentrations,
+  setSelectedConcentrations,
+  showOnlyAvailable,
+  setShowOnlyAvailable,
+  sortBy,
+  setSortBy,
   addToCart,
   onQuickView
 }: CatalogSectionProps) => {
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands(
+      selectedBrands.includes(brand)
+        ? selectedBrands.filter(b => b !== brand)
+        : [...selectedBrands, brand]
+    );
+  };
+
+  const toggleConcentration = (concentration: string) => {
+    setSelectedConcentrations(
+      selectedConcentrations.includes(concentration)
+        ? selectedConcentrations.filter(c => c !== concentration)
+        : [...selectedConcentrations, concentration]
+    );
+  };
   return (
     <section id="catalog" className="py-20 bg-card">
       <div className="container mx-auto px-4">
@@ -66,9 +105,77 @@ const CatalogSection = ({
                 </div>
               </div>
             </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 text-lg">Бренд</h3>
+              <div className="space-y-3">
+                {brands.map(brand => (
+                  <div key={brand} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={brand}
+                      checked={selectedBrands.includes(brand)}
+                      onCheckedChange={() => toggleBrand(brand)}
+                    />
+                    <Label htmlFor={brand} className="text-sm cursor-pointer">
+                      {brand}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 text-lg">Концентрация</h3>
+              <div className="space-y-3">
+                {concentrations.map(concentration => (
+                  <div key={concentration} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={concentration}
+                      checked={selectedConcentrations.includes(concentration)}
+                      onCheckedChange={() => toggleConcentration(concentration)}
+                    />
+                    <Label htmlFor={concentration} className="text-sm cursor-pointer">
+                      {concentration}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="available"
+                  checked={showOnlyAvailable}
+                  onCheckedChange={(checked) => setShowOnlyAvailable(checked as boolean)}
+                />
+                <Label htmlFor="available" className="text-sm cursor-pointer font-semibold">
+                  Только в наличии
+                </Label>
+              </div>
+            </Card>
           </div>
 
           <div className="lg:col-span-3">
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-muted-foreground">
+                Найдено: <span className="font-semibold text-foreground">{filteredPerfumes.length}</span> товаров
+              </p>
+              <div className="flex items-center gap-2">
+                <Icon name="ArrowUpDown" size={18} className="text-muted-foreground" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Сортировка" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">По умолчанию</SelectItem>
+                    <SelectItem value="price-asc">Цена: по возрастанию</SelectItem>
+                    <SelectItem value="price-desc">Цена: по убыванию</SelectItem>
+                    <SelectItem value="name">По названию</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPerfumes.map(perfume => (
                 <PerfumeCard 
@@ -79,6 +186,13 @@ const CatalogSection = ({
                 />
               ))}
             </div>
+            {filteredPerfumes.length === 0 && (
+              <div className="text-center py-12">
+                <Icon name="Search" size={48} className="text-muted-foreground mx-auto mb-4" />
+                <p className="text-lg text-muted-foreground">Товары не найдены</p>
+                <p className="text-sm text-muted-foreground mt-2">Попробуйте изменить фильтры</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

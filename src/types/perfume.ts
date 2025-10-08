@@ -7,6 +7,8 @@ export interface Perfume {
   volume: string;
   notes: string[];
   image: string;
+  concentration?: string;
+  availability?: boolean;
 }
 
 export const perfumes: Perfume[] = [
@@ -18,7 +20,9 @@ export const perfumes: Perfume[] = [
     category: 'Унисекс',
     volume: '100 мл',
     notes: ['Бергамот', 'Роза', 'Пачули'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Eau de Parfum',
+    availability: true
   },
   {
     id: 2,
@@ -28,7 +32,9 @@ export const perfumes: Perfume[] = [
     category: 'Женский',
     volume: '50 мл',
     notes: ['Ваниль', 'Жасмин', 'Амбра'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Extrait de Parfum',
+    availability: true
   },
   {
     id: 3,
@@ -38,7 +44,9 @@ export const perfumes: Perfume[] = [
     category: 'Мужской',
     volume: '100 мл',
     notes: ['Дуб', 'Кедр', 'Ветивер'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Eau de Toilette',
+    availability: false
   },
   {
     id: 4,
@@ -48,7 +56,9 @@ export const perfumes: Perfume[] = [
     category: 'Женский',
     volume: '75 мл',
     notes: ['Цитрус', 'Пион', 'Сандал'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Eau de Toilette',
+    availability: true
   },
   {
     id: 5,
@@ -58,7 +68,9 @@ export const perfumes: Perfume[] = [
     category: 'Унисекс',
     volume: '100 мл',
     notes: ['Удовая древесина', 'Кожа', 'Мускус'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Eau de Parfum',
+    availability: true
   },
   {
     id: 6,
@@ -68,6 +80,8 @@ export const perfumes: Perfume[] = [
     category: 'Женский',
     volume: '50 мл',
     notes: ['Роза', 'Личи', 'Белый чай'],
-    image: '/placeholder.svg'
+    image: '/placeholder.svg',
+    concentration: 'Eau de Parfum',
+    availability: true
   }
 ];

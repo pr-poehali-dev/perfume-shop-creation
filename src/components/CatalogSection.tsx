@@ -17,6 +17,9 @@ interface CatalogSectionProps {
   brands: string[];
   selectedBrands: string[];
   setSelectedBrands: (brands: string[]) => void;
+  volumes: string[];
+  selectedVolumes: string[];
+  setSelectedVolumes: (volumes: string[]) => void;
   showOnlyAvailable: boolean;
   setShowOnlyAvailable: (show: boolean) => void;
   sortBy: string;
@@ -35,6 +38,9 @@ const CatalogSection = ({
   brands,
   selectedBrands,
   setSelectedBrands,
+  volumes,
+  selectedVolumes,
+  setSelectedVolumes,
   showOnlyAvailable,
   setShowOnlyAvailable,
   sortBy,
@@ -47,6 +53,14 @@ const CatalogSection = ({
       selectedBrands.includes(brand)
         ? selectedBrands.filter(b => b !== brand)
         : [...selectedBrands, brand]
+    );
+  };
+
+  const toggleVolume = (volume: string) => {
+    setSelectedVolumes(
+      selectedVolumes.includes(volume)
+        ? selectedVolumes.filter(v => v !== volume)
+        : [...selectedVolumes, volume]
     );
   };
   return (
@@ -104,6 +118,24 @@ const CatalogSection = ({
                     />
                     <Label htmlFor={brand} className="text-sm cursor-pointer">
                       {brand}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4 text-lg">Объём</h3>
+              <div className="space-y-3">
+                {volumes.map(volume => (
+                  <div key={volume} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={volume}
+                      checked={selectedVolumes.includes(volume)}
+                      onCheckedChange={() => toggleVolume(volume)}
+                    />
+                    <Label htmlFor={volume} className="text-sm cursor-pointer">
+                      {volume}
                     </Label>
                   </div>
                 ))}

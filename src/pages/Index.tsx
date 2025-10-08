@@ -12,6 +12,7 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Все');
   const [priceRange, setPriceRange] = useState([0, 20000]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedVolumes, setSelectedVolumes] = useState<string[]>([]);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState<string>('default');
   const [cart, setCart] = useState<{id: number, quantity: number}[]>([]);
@@ -23,13 +24,15 @@ const Index = () => {
 
   const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
   const brands = Array.from(new Set(perfumes.map(p => p.brand)));
+  const volumes = Array.from(new Set(perfumes.map(p => p.volume)));
 
   const filteredPerfumes = perfumes.filter(perfume => {
     const categoryMatch = selectedCategory === 'Все' || perfume.category === selectedCategory;
     const priceMatch = perfume.price >= priceRange[0] && perfume.price <= priceRange[1];
     const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(perfume.brand);
+    const volumeMatch = selectedVolumes.length === 0 || selectedVolumes.includes(perfume.volume);
     const availabilityMatch = !showOnlyAvailable || perfume.availability;
-    return categoryMatch && priceMatch && brandMatch && availabilityMatch;
+    return categoryMatch && priceMatch && brandMatch && volumeMatch && availabilityMatch;
   }).sort((a, b) => {
     if (sortBy === 'price-asc') return a.price - b.price;
     if (sortBy === 'price-desc') return b.price - a.price;
@@ -115,6 +118,9 @@ const Index = () => {
           brands={brands}
           selectedBrands={selectedBrands}
           setSelectedBrands={setSelectedBrands}
+          volumes={volumes}
+          selectedVolumes={selectedVolumes}
+          setSelectedVolumes={setSelectedVolumes}
           showOnlyAvailable={showOnlyAvailable}
           setShowOnlyAvailable={setShowOnlyAvailable}
           sortBy={sortBy}

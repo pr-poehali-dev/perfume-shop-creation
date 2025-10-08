@@ -177,7 +177,7 @@ const Index = () => {
         onAddToCart={addToCart}
       />
 
-      <footer className="bg-gradient-to-br from-rose-900 via-rose-800 to-amber-900 text-white py-16">
+      <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>

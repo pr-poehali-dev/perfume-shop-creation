@@ -31,6 +31,8 @@ interface CatalogSectionProps {
   setSearchQuery: (query: string) => void;
   wishlist: number[];
   toggleWishlist: (id: number) => void;
+  comparison?: number[];
+  toggleComparison?: (id: number) => void;
 }
 
 const CatalogSection = ({
@@ -55,7 +57,9 @@ const CatalogSection = ({
   searchQuery,
   setSearchQuery,
   wishlist,
-  toggleWishlist
+  toggleWishlist,
+  comparison = [],
+  toggleComparison
 }: CatalogSectionProps) => {
   const toggleBrand = (brand: string) => {
     setSelectedBrands(
@@ -198,6 +202,8 @@ const CatalogSection = ({
                   onQuickView={onQuickView}
                   wishlist={wishlist}
                   toggleWishlist={toggleWishlist}
+                  comparison={comparison}
+                  toggleComparison={toggleComparison}
                 />
               ))}
             </div>

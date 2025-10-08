@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Perfume } from '@/types/perfume';
+import { Perfume, Review } from '@/types/perfume';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
@@ -8,6 +8,8 @@ import InfoSections from '@/components/InfoSections';
 import PerfumeQuickView from '@/components/PerfumeQuickView';
 import CheckoutModal from '@/components/CheckoutModal';
 import WishlistSection from '@/components/WishlistSection';
+import RecentlyViewedSection from '@/components/RecentlyViewedSection';
+import ComparisonSection from '@/components/ComparisonSection';
 import Icon from '@/components/ui/icon';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -37,10 +39,22 @@ const Index = () => {
     const saved = localStorage.getItem('wishlist');
     return saved ? JSON.parse(saved) : [];
   });
+  const [comparison, setComparison] = useState<number[]>(() => {
+    const saved = localStorage.getItem('comparison');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
+
+  useEffect(() => {
+    localStorage.setItem('comparison', JSON.stringify(comparison));
+  }, [comparison]);
+
+  useEffect(() => {
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  }, [recentlyViewed]);
 
   const toggleWishlist = (id: number) => {
     const perfume = perfumes.find(p => p.id === id);
@@ -55,6 +69,52 @@ const Index = () => {
       description: perfume?.name,
     });
   };
+
+  const toggleComparison = (id: number) => {
+    if (comparison.includes(id)) {
+      setComparison(prev => prev.filter(item => item !== id));
+      toast({
+        title: 'Удалено из сравнения',
+      });
+    } else if (comparison.length >= 4) {
+      toast({
+        title: 'Максимум 4 товара',
+        description: 'Удалите один товар для добавления нового',
+        variant: 'destructive'
+      });
+    } else {
+      setComparison(prev => [...prev, id]);
+      toast({
+        title: 'Добавлено к сравнению',
+      });
+    }
+  };
+
+  const handleAddReview = useCallback((perfumeId: number, review: Omit<Review, 'id' | 'helpful'>) => {
+    setPerfumes(prev => prev.map(p => {
+      if (p.id === perfumeId) {
+        const newReview: Review = {
+          ...review,
+          id: (p.reviews?.length || 0) + 1,
+          helpful: 0
+        };
+        const updatedReviews = [...(p.reviews || []), newReview];
+        const newRating = updatedReviews.reduce((sum, r) => sum + r.rating, 0) / updatedReviews.length;
+        return {
+          ...p,
+          reviews: updatedReviews,
+          rating: newRating,
+          reviewsCount: updatedReviews.length
+        };
+      }
+      return p;
+    }));
+    
+    toast({
+      title: 'Отзыв добавлен',
+      description: 'Спасибо за ваш отзыв!',
+    });
+  }, [toast]);
 
   useScrollAnimation();
 
@@ -250,6 +310,17 @@ const Index = () => {
           setSearchQuery={setSearchQuery}
           wishlist={wishlist}
           toggleWishlist={toggleWishlist}
+          comparison={comparison}
+          toggleComparison={toggleComparison}
+        />
+
+        <RecentlyViewedSection
+          perfumes={perfumes}
+          recentlyViewed={recentlyViewed}
+          addToCart={addToCart}
+          onQuickView={handleQuickView}
+          toggleWishlist={toggleWishlist}
+          wishlist={wishlist}
         />
 
         <WishlistSection 
@@ -268,6 +339,18 @@ const Index = () => {
         isOpen={isQuickViewOpen}
         onClose={() => setIsQuickViewOpen(false)}
         onAddToCart={addToCart}
+        toggleWishlist={toggleWishlist}
+        wishlist={wishlist}
+        toggleComparison={toggleComparison}
+        comparison={comparison}
+        onAddReview={handleAddReview}
+      />
+
+      <ComparisonSection
+        perfumes={perfumes}
+        comparison={comparison}
+        toggleComparison={toggleComparison}
+        addToCart={addToCart}
       />
 
       <CheckoutModal

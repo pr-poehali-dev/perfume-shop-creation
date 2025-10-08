@@ -1,3 +1,12 @@
+export interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  date: string;
+  text: string;
+  helpful: number;
+}
+
 export interface Perfume {
   id: number;
   name: string;
@@ -9,6 +18,11 @@ export interface Perfume {
   image: string;
   concentration?: string;
   availability?: boolean;
+  description?: string;
+  reviews?: Review[];
+  rating?: number;
+  reviewsCount?: number;
+  discount?: number;
 }
 
 export const perfumes: Perfume[] = [

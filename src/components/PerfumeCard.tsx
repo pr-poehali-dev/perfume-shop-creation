@@ -10,38 +10,87 @@ interface PerfumeCardProps {
   onQuickView: (perfume: Perfume) => void;
   wishlist: number[];
   toggleWishlist: (id: number) => void;
+  comparison?: number[];
+  toggleComparison?: (id: number) => void;
 }
 
-const PerfumeCard = ({ perfume, onAddToCart, onQuickView, wishlist, toggleWishlist }: PerfumeCardProps) => {
+const PerfumeCard = ({ 
+  perfume, 
+  onAddToCart, 
+  onQuickView, 
+  wishlist, 
+  toggleWishlist,
+  comparison = [],
+  toggleComparison
+}: PerfumeCardProps) => {
   const isInWishlist = wishlist.includes(perfume.id);
+  const isInComparison = comparison.includes(perfume.id);
+  const finalPrice = perfume.discount 
+    ? Math.round(perfume.price * (1 - perfume.discount / 100))
+    : perfume.price;
+  
   return (
     <Card className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 hover:border-accent/30">
       <div className="aspect-square bg-gradient-to-br from-gray-800/40 to-gray-900/20 relative overflow-hidden cursor-pointer" onClick={() => onQuickView(perfume)}>
-        <div className="absolute inset-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-          <Icon name="Sparkles" size={64} className="text-accent/30 group-hover:text-accent/50 transition-colors" />
-        </div>
+        <img 
+          src={perfume.image} 
+          alt={perfume.name}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
           <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
             <Icon name="Eye" size={24} className="text-primary" />
           </div>
         </div>
         <Badge className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm">{perfume.category}</Badge>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleWishlist(perfume.id);
-          }}
-          className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-all hover:scale-110 shadow-lg"
-          aria-label={isInWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
-        >
-          <Icon 
-            name="Heart" 
-            size={18} 
-            className={`transition-colors ${
-              isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-600'
-            }`}
-          />
-        </button>
+        {perfume.discount && (
+          <Badge className="absolute top-14 right-4 bg-red-500/90 backdrop-blur-sm">
+            -{perfume.discount}%
+          </Badge>
+        )}
+        {!perfume.availability && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <Badge variant="secondary" className="text-sm px-3 py-1">
+              Нет в наличии
+            </Badge>
+          </div>
+        )}
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist(perfume.id);
+            }}
+            className="bg-white/90 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-all hover:scale-110 shadow-lg"
+            aria-label={isInWishlist ? 'Удалить из избранного' : 'Добавить в избранное'}
+          >
+            <Icon 
+              name="Heart" 
+              size={18} 
+              className={`transition-colors ${
+                isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-600'
+              }`}
+            />
+          </button>
+          {toggleComparison && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleComparison(perfume.id);
+              }}
+              className="bg-white/90 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-all hover:scale-110 shadow-lg"
+              aria-label={isInComparison ? 'Удалить из сравнения' : 'Добавить к сравнению'}
+            >
+              <Icon 
+                name="GitCompare" 
+                size={18} 
+                className={`transition-colors ${
+                  isInComparison ? 'text-primary' : 'text-gray-600'
+                }`}
+              />
+            </button>
+          )}
+        </div>
       </div>
       <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
         <div>
@@ -51,19 +100,43 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView, wishlist, toggleWishli
         </div>
         
         <div className="pt-3 md:pt-4 border-t space-y-2 md:space-y-3">
+          {perfume.rating && perfume.reviewsCount && (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Icon
+                    key={star}
+                    name="Star"
+                    size={14}
+                    className={star <= Math.round(perfume.rating!) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {perfume.rating.toFixed(1)} ({perfume.reviewsCount})
+              </span>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Цена</p>
-              <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                {perfume.price.toLocaleString()}
-                <span className="text-base md:text-lg ml-1">₽</span>
-              </p>
+              {perfume.discount ? (
+                <div>
+                  <p className="text-2xl md:text-3xl font-bold text-red-600">
+                    {finalPrice.toLocaleString()}
+                    <span className="text-base md:text-lg ml-1">₽</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground line-through">
+                    {perfume.price.toLocaleString()} ₽
+                  </p>
+                </div>
+              ) : (
+                <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                  {perfume.price.toLocaleString()}
+                  <span className="text-base md:text-lg ml-1">₽</span>
+                </p>
+              )}
             </div>
-            {!perfume.availability && (
-              <Badge variant="secondary" className="text-xs">
-                Нет в наличии
-              </Badge>
-            )}
           </div>
           <div className="flex gap-2">
             <Button 

@@ -27,7 +27,7 @@ const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice }: Ca
       <SheetHeader>
         <SheetTitle className="text-2xl">Корзина</SheetTitle>
       </SheetHeader>
-      <div className="mt-8 flex flex-col h-full">
+      <div className="flex flex-col h-[calc(100vh-8rem)]">
         {cartItems.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <Icon name="ShoppingBag" size={64} className="text-muted-foreground mb-4" />
@@ -35,7 +35,7 @@ const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice }: Ca
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-auto space-y-4 pr-2">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2">
               {cartItems.map(item => (
                 <Card key={item.id}>
                   <CardContent className="p-4">
@@ -82,7 +82,7 @@ const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice }: Ca
                 </Card>
               ))}
             </div>
-            <div className="border-t pt-4 mt-4 space-y-4">
+            <div className="border-t pt-4 mt-4 space-y-4 flex-shrink-0">
               <div className="flex justify-between items-center text-lg font-semibold">
                 <span>Итого:</span>
                 <span>{totalPrice.toLocaleString()} ₽</span>

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Perfume } from '@/types/perfume';
+import WishlistButton from './WishlistButton';
 
 interface PerfumeCardProps {
   perfume: Perfume;
@@ -23,6 +24,9 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
           </div>
         </div>
         <Badge className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm">{perfume.category}</Badge>
+        <div className="absolute top-4 left-4">
+          <WishlistButton perfumeId={perfume.id} />
+        </div>
       </div>
       <CardContent className="p-6 space-y-4">
         <div>

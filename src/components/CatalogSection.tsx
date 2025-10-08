@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import PerfumeCard from './PerfumeCard';
+import SearchBar from './SearchBar';
 import { Perfume } from '@/types/perfume';
 
 interface CatalogSectionProps {
@@ -26,6 +27,8 @@ interface CatalogSectionProps {
   setSortBy: (sort: string) => void;
   addToCart: (id: number) => void;
   onQuickView: (perfume: Perfume) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 const CatalogSection = ({
@@ -46,7 +49,9 @@ const CatalogSection = ({
   sortBy,
   setSortBy,
   addToCart,
-  onQuickView
+  onQuickView,
+  searchQuery,
+  setSearchQuery
 }: CatalogSectionProps) => {
   const toggleBrand = (brand: string) => {
     setSelectedBrands(
@@ -67,6 +72,10 @@ const CatalogSection = ({
     <section id="catalog" className="py-20 bg-card">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Каталог</h2>
+        
+        <div className="mb-8 max-w-2xl mx-auto">
+          <SearchBar onSearch={setSearchQuery} />
+        </div>
         
         <div className="grid lg:grid-cols-4 gap-8 mb-12">
           <div className="lg:col-span-1 space-y-6">

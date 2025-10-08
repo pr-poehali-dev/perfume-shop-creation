@@ -18,11 +18,6 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-100 dark:bg-rose-950 rounded-full mb-6">
-              <Icon name="Sparkles" size={18} className="text-rose-600 dark:text-rose-400" />
-              <span className="text-sm font-medium text-rose-700 dark:text-rose-300">Эксклюзивная коллекция 2024</span>
-            </div>
-            
             <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
               Искусство
               <br />

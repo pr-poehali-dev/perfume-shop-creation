@@ -26,6 +26,7 @@ interface HeaderProps {
   removeFromCart: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
   totalPrice: number;
+  onCheckoutClick: () => void;
 }
 
 const Header = ({
@@ -39,7 +40,8 @@ const Header = ({
   cartItems,
   removeFromCart,
   updateQuantity,
-  totalPrice
+  totalPrice,
+  onCheckoutClick
 }: HeaderProps) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
@@ -112,6 +114,7 @@ const Header = ({
                   removeFromCart={removeFromCart}
                   updateQuantity={updateQuantity}
                   totalPrice={totalPrice}
+                  onCheckoutClick={onCheckoutClick}
                 />
               </Sheet>
             </li>

@@ -19,9 +19,10 @@ interface CartSheetProps {
   removeFromCart: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
   totalPrice: number;
+  onCheckoutClick: () => void;
 }
 
-const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice }: CartSheetProps) => {
+const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice, onCheckoutClick }: CartSheetProps) => {
   return (
     <SheetContent className="w-full sm:max-w-lg">
       <SheetHeader>
@@ -87,7 +88,7 @@ const CartSheet = ({ cartItems, removeFromCart, updateQuantity, totalPrice }: Ca
                 <span>Итого:</span>
                 <span>{totalPrice.toLocaleString()} ₽</span>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
+              <Button className="w-full bg-primary hover:bg-primary/90" size="lg" onClick={onCheckoutClick}>
                 Оформить заказ
               </Button>
             </div>

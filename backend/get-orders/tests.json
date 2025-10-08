@@ -12,6 +12,23 @@
         "orders": "array"
       },
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Update order status",
+      "method": "PUT",
+      "path": "/",
+      "headers": {
+        "X-Admin-Password": "admin123"
+      },
+      "body": {
+        "orderId": 1,
+        "status": "processing"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
     }
   ]
 }

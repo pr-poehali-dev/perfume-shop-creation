@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,6 +42,8 @@ const Orders = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const handleLogin = async () => {
@@ -126,6 +132,123 @@ const Orders = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleStatusChange = async (orderId: number, newStatus: string) => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/fe8d5d8d-ffbc-4b6e-947f-0842449d171d', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({ orderId, status: newStatus })
+      });
+
+      if (response.ok) {
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+        toast({
+          title: '\u0421\u0442\u0430\u0442\u0443\u0441 \u043e\u0431\u043d\u043e\u0432\u043b\u0451\u043d',
+          description: '\u0421\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u043a\u0430\u0437\u0430 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u0438\u0437\u043c\u0435\u043d\u0451\u043d'
+        });
+      } else {
+        toast({
+          title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+          description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0441\u0442\u0430\u0442\u0443\u0441',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+        description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0441\u044f \u043a \u0441\u0435\u0440\u0432\u0435\u0440\u0443',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: number) => {
+    if (!confirm('\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u044d\u0442\u043e\u0442 \u0437\u0430\u043a\u0430\u0437?')) return;
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/fe8d5d8d-ffbc-4b6e-947f-0842449d171d', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({ orderId })
+      });
+
+      if (response.ok) {
+        setOrders(orders.filter(o => o.id !== orderId));
+        toast({
+          title: '\u0417\u0430\u043a\u0430\u0437 \u0443\u0434\u0430\u043b\u0451\u043d',
+          description: '\u0417\u0430\u043a\u0430\u0437 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u0443\u0434\u0430\u043b\u0451\u043d \u0438\u0437 \u0431\u0430\u0437\u044b \u0434\u0430\u043d\u043d\u044b\u0445'
+        });
+      } else {
+        toast({
+          title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+          description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0437\u0430\u043a\u0430\u0437',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+        description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0441\u044f \u043a \u0441\u0435\u0440\u0432\u0435\u0440\u0443',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingOrder) return;
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/fe8d5d8d-ffbc-4b6e-947f-0842449d171d', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({
+          orderId: editingOrder.id,
+          customerName: editingOrder.customerName,
+          customerPhone: editingOrder.customerPhone,
+          customerEmail: editingOrder.customerEmail,
+          deliveryAddress: editingOrder.deliveryAddress,
+          city: editingOrder.city,
+          comment: editingOrder.comment
+        })
+      });
+
+      if (response.ok) {
+        setOrders(orders.map(o => o.id === editingOrder.id ? editingOrder : o));
+        setIsEditDialogOpen(false);
+        toast({
+          title: '\u0417\u0430\u043a\u0430\u0437 \u043e\u0431\u043d\u043e\u0432\u043b\u0451\u043d',
+          description: '\u0414\u0430\u043d\u043d\u044b\u0435 \u0437\u0430\u043a\u0430\u0437\u0430 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u044b'
+        });
+      } else {
+        toast({
+          title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+          description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0437\u0430\u043a\u0430\u0437',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: '\u041e\u0448\u0438\u0431\u043a\u0430',
+        description: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0441\u044f \u043a \u0441\u0435\u0440\u0432\u0435\u0440\u0443',
+        variant: 'destructive'
+      });
+    }
   };
 
   if (!isAuthenticated) {
@@ -232,7 +355,19 @@ const Orders = () => {
                         {formatDate(order.createdAt)}
                       </p>
                     </div>
-                    {getStatusBadge(order.status)}
+                    <div className="flex items-center gap-2">
+                      <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value)}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Ожидает</SelectItem>
+                          <SelectItem value="processing">В обработке</SelectItem>
+                          <SelectItem value="completed">Выполнен</SelectItem>
+                          <SelectItem value="cancelled">Отменён</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -304,12 +439,92 @@ const Orders = () => {
                       Оплата: {order.paymentMethod === 'card' ? 'Картой онлайн' : 'Наличными'}
                     </div>
                   </div>
+
+                  <div className="flex gap-2 border-t pt-4">
+                    <Button onClick={() => handleEditOrder(order)} variant="outline" size="sm">
+                      <Icon name="Edit" size={16} className="mr-2" />
+                      Редактировать
+                    </Button>
+                    <Button onClick={() => handleDeleteOrder(order.id)} variant="destructive" size="sm">
+                      <Icon name="Trash2" size={16} className="mr-2" />
+                      Удалить
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))
           )}
         </div>
       </main>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Редактировать заказ {editingOrder?.orderNumber}</DialogTitle>
+          </DialogHeader>
+          {editingOrder && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">Имя клиента</Label>
+                <Input
+                  id="edit-name"
+                  value={editingOrder.customerName}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, customerName: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-phone">Телефон</Label>
+                <Input
+                  id="edit-phone"
+                  value={editingOrder.customerPhone}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, customerPhone: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  value={editingOrder.customerEmail}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, customerEmail: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-city">Город</Label>
+                <Input
+                  id="edit-city"
+                  value={editingOrder.city}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, city: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-address">Адрес доставки</Label>
+                <Input
+                  id="edit-address"
+                  value={editingOrder.deliveryAddress}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, deliveryAddress: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-comment">Комментарий</Label>
+                <Textarea
+                  id="edit-comment"
+                  value={editingOrder.comment}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, comment: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Отмена
+            </Button>
+            <Button onClick={handleSaveEdit}>
+              Сохранить изменения
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

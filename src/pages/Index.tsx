@@ -7,6 +7,7 @@ import CatalogSection from '@/components/CatalogSection';
 import InfoSections from '@/components/InfoSections';
 import PerfumeQuickView from '@/components/PerfumeQuickView';
 import Icon from '@/components/ui/icon';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -24,6 +25,8 @@ const Index = () => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [perfumes, setPerfumes] = useState<Perfume[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useScrollAnimation();
 
   useEffect(() => {
     const fetchPerfumes = async () => {

@@ -18,7 +18,7 @@ const InfoSections = () => {
 
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <div className="flex gap-4">
+                <div className="flex gap-4 animate-on-scroll">
                   <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Icon name="Star" size={24} className="text-white" />
                   </div>
@@ -31,7 +31,7 @@ const InfoSections = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 animate-on-scroll" style={{transitionDelay: '0.1s'}}>
                   <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Icon name="Sparkles" size={24} className="text-white" />
                   </div>
@@ -44,7 +44,7 @@ const InfoSections = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 animate-on-scroll" style={{transitionDelay: '0.2s'}}>
                   <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Icon name="Heart" size={24} className="text-white" />
                   </div>
@@ -58,7 +58,7 @@ const InfoSections = () => {
                 </div>
               </div>
 
-              <div className="relative">
+              <div className="relative animate-on-scroll" style={{transitionDelay: '0.3s'}}>
                 <div className="absolute inset-0 bg-gradient-to-br from-rose-500/20 to-amber-500/20 rounded-3xl blur-3xl" />
                 <Card className="relative p-8 bg-gradient-to-br from-rose-50/50 to-amber-50/50 dark:from-rose-950/20 dark:to-amber-950/20 backdrop-blur border-2 border-rose-200/50 dark:border-rose-800/50">
                   <div className="space-y-8">
@@ -105,7 +105,7 @@ const InfoSections = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-amber-500/50 group">
+            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-amber-500/50 group animate-on-scroll">
               <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Icon name="Truck" size={36} className="text-white" />
               </div>
@@ -125,7 +125,7 @@ const InfoSections = () => {
               </div>
             </Card>
             
-            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-rose-500/50 group">
+            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-rose-500/50 group animate-on-scroll" style={{transitionDelay: '0.1s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Icon name="ShieldCheck" size={36} className="text-white" />
               </div>
@@ -145,7 +145,7 @@ const InfoSections = () => {
               </div>
             </Card>
             
-            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-amber-500/50 group">
+            <Card className="p-8 text-center hover:shadow-2xl transition-all duration-300 border-2 hover:border-amber-500/50 group animate-on-scroll" style={{transitionDelay: '0.2s'}}>
               <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Icon name="Gift" size={36} className="text-white" />
               </div>
@@ -173,7 +173,7 @@ const InfoSections = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Контакты</h2>
           <div className="max-w-2xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="p-6">
+              <Card className="p-6 animate-on-scroll">
                 <div className="flex items-start gap-4">
                   <Icon name="MapPin" size={24} className="text-accent mt-1" />
                   <div>
@@ -186,7 +186,7 @@ const InfoSections = () => {
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 animate-on-scroll" style={{transitionDelay: '0.1s'}}>
                 <div className="flex items-start gap-4">
                   <Icon name="Phone" size={24} className="text-accent mt-1" />
                   <div>
@@ -199,7 +199,7 @@ const InfoSections = () => {
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 animate-on-scroll" style={{transitionDelay: '0.2s'}}>
                 <div className="flex items-start gap-4">
                   <Icon name="Mail" size={24} className="text-accent mt-1" />
                   <div>
@@ -211,7 +211,7 @@ const InfoSections = () => {
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 animate-on-scroll" style={{transitionDelay: '0.3s'}}>
                 <div className="flex items-start gap-4">
                   <Icon name="Clock" size={24} className="text-accent mt-1" />
                   <div>

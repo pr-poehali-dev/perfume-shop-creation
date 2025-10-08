@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Create perfume",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "name": "Test Perfume",
+        "brand": "Test Brand",
+        "price": 5000,
+        "category": "Унисекс",
+        "volume": "50 мл",
+        "notes": ["Тест", "Нота"],
+        "availability": true
+      },
+      "expectedStatus": 201
+    },
+    {
+      "name": "OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}

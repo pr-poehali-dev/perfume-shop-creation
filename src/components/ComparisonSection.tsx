@@ -65,7 +65,7 @@ const ComparisonSection = ({ perfumes, comparison, toggleComparison, addToCart }
           ))}
           
           {comparisonItems.length >= 2 && (
-            <div className="border-t pt-3 space-y-2">
+            <div className="border-t pt-3">
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <p className="text-muted-foreground mb-1">Цена</p>
@@ -78,28 +78,6 @@ const ComparisonSection = ({ perfumes, comparison, toggleComparison, addToCart }
                   <p className="font-semibold text-orange-600">
                     {(Math.max(...comparisonItems.map(p => p.price)) - Math.min(...comparisonItems.map(p => p.price))).toLocaleString()} ₽
                   </p>
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Общие ноты:</p>
-                <div className="flex flex-wrap gap-1">
-                  {Array.from(new Set(
-                    comparisonItems.flatMap(p => p.notes)
-                  )).filter(note => 
-                    comparisonItems.every(p => p.notes.includes(note))
-                  ).map(note => (
-                    <Badge key={note} variant="secondary" className="text-xs">
-                      {note}
-                    </Badge>
-                  ))}
-                  {Array.from(new Set(
-                    comparisonItems.flatMap(p => p.notes)
-                  )).filter(note => 
-                    comparisonItems.every(p => p.notes.includes(note))
-                  ).length === 0 && (
-                    <span className="text-xs text-muted-foreground">Нет общих нот</span>
-                  )}
                 </div>
               </div>
             </div>

@@ -122,16 +122,7 @@ const PerfumeQuickView = ({
               )}
             </div>
             
-            <div>
-              <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-2">Парфюмерные ноты</p>
-              <div className="flex flex-wrap gap-2">
-                {perfume.notes.map((note, idx) => (
-                  <Badge key={idx} variant="outline" className="text-xs">
-                    {note}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+
           </div>
 
           <div className="space-y-4 md:space-y-6">
@@ -142,17 +133,9 @@ const PerfumeQuickView = ({
 
             <Separator />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-1 md:mb-2">Объём</p>
-                <p className="text-base md:text-lg font-medium">{perfume.volume}</p>
-              </div>
-              {perfume.concentration && (
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-1 md:mb-2">Концентрация</p>
-                  <p className="text-base md:text-lg font-medium">{perfume.concentration}</p>
-                </div>
-              )}
+            <div>
+              <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-1 md:mb-2">Объём</p>
+              <p className="text-base md:text-lg font-medium">{perfume.volume}</p>
             </div>
 
             <Separator />
@@ -266,12 +249,6 @@ const PerfumeQuickView = ({
                     <p className="text-muted-foreground">Объём</p>
                     <p className="font-medium">{perfume.volume}</p>
                   </div>
-                  {perfume.concentration && (
-                    <div>
-                      <p className="text-muted-foreground">Концентрация</p>
-                      <p className="font-medium">{perfume.concentration}</p>
-                    </div>
-                  )}
                 </div>
               </div>
             </TabsContent>

@@ -52,19 +52,18 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex gap-2">
             <Button 
               onClick={() => onQuickView(perfume)}
               variant="outline"
-              className="group-hover:scale-105 transition-transform"
-              size="lg"
+              size="icon"
+              className="group-hover:scale-105 transition-transform flex-shrink-0"
             >
-              <Icon name="Eye" size={18} className="mr-2" />
-              Просмотр
+              <Icon name="Eye" size={18} />
             </Button>
             <Button 
               onClick={() => onAddToCart(perfume.id)}
-              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform"
+              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform flex-1"
               size="lg"
             >
               <Icon name="ShoppingCart" size={18} className="mr-2" />

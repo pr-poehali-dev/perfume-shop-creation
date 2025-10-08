@@ -69,18 +69,18 @@ const CatalogSection = ({
     );
   };
   return (
-    <section id="catalog" className="py-20 bg-card">
+    <section id="catalog" className="py-12 md:py-20 bg-card">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Каталог</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-8 md:mb-12">Каталог</h2>
         
-        <div className="mb-8 max-w-2xl mx-auto">
+        <div className="mb-6 md:mb-8 max-w-2xl mx-auto">
           <SearchBar onSearch={setSearchQuery} />
         </div>
         
-        <div className="grid lg:grid-cols-4 gap-8 mb-12">
-          <div className="lg:col-span-1 space-y-6">
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 text-lg">Категория</h3>
+        <div className="grid lg:grid-cols-4 gap-6 md:gap-8 mb-12">
+          <div className="lg:col-span-1 space-y-4 md:space-y-6">
+            <Card className="p-4 md:p-6">
+              <h3 className="font-semibold mb-3 md:mb-4 text-base md:text-lg">Категория</h3>
               <div className="space-y-2">
                 {categories.map(category => (
                   <button
@@ -98,8 +98,8 @@ const CatalogSection = ({
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 text-lg">Цена</h3>
+            <Card className="p-4 md:p-6">
+              <h3 className="font-semibold mb-3 md:mb-4 text-base md:text-lg">Цена</h3>
               <div className="space-y-4">
                 <Slider
                   value={priceRange}
@@ -115,8 +115,8 @@ const CatalogSection = ({
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 text-lg">Бренд</h3>
+            <Card className="p-4 md:p-6">
+              <h3 className="font-semibold mb-3 md:mb-4 text-base md:text-lg">Бренд</h3>
               <div className="space-y-3">
                 {brands.map(brand => (
                   <div key={brand} className="flex items-center space-x-2">
@@ -133,8 +133,8 @@ const CatalogSection = ({
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 text-lg">Объём</h3>
+            <Card className="p-4 md:p-6">
+              <h3 className="font-semibold mb-3 md:mb-4 text-base md:text-lg">Объём</h3>
               <div className="space-y-3">
                 {volumes.map(volume => (
                   <div key={volume} className="flex items-center space-x-2">
@@ -151,7 +151,7 @@ const CatalogSection = ({
               </div>
             </Card>
 
-            <Card className="p-6">
+            <Card className="p-4 md:p-6">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="available"
@@ -166,14 +166,14 @@ const CatalogSection = ({
           </div>
 
           <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-6">
-              <p className="text-muted-foreground">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6">
+              <p className="text-sm md:text-base text-muted-foreground">
                 Найдено: <span className="font-semibold text-foreground">{filteredPerfumes.length}</span> товаров
               </p>
-              <div className="flex items-center gap-2">
-                <Icon name="ArrowUpDown" size={18} className="text-muted-foreground" />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Icon name="ArrowUpDown" size={16} className="text-muted-foreground hidden sm:block" />
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full sm:w-[200px] h-9 text-sm">
                     <SelectValue placeholder="Сортировка" />
                   </SelectTrigger>
                   <SelectContent>
@@ -185,7 +185,7 @@ const CatalogSection = ({
                 </Select>
               </div>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredPerfumes.map(perfume => (
                 <PerfumeCard 
                   key={perfume.id} 

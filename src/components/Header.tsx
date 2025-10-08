@@ -45,16 +45,36 @@ const Header = ({
 }: HeaderProps) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
-      <nav className="container mx-auto px-4 py-4">
+      <nav className="container mx-auto px-4 py-3 md:py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">PARFUMERIE</h1>
+          <h1 className="text-xl md:text-3xl font-bold tracking-tight">PARFUMERIE</h1>
           
-          <button 
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Icon name={isMenuOpen ? "X" : "Menu"} size={24} />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Icon name="ShoppingBag" size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <CartSheet
+                cartItems={cartItems}
+                removeFromCart={removeFromCart}
+                updateQuantity={updateQuantity}
+                totalPrice={totalPrice}
+                onCheckoutClick={onCheckoutClick}
+              />
+            </Sheet>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Icon name={isMenuOpen ? "X" : "Menu"} size={24} />
+            </button>
+          </div>
 
           <ul className="hidden md:flex gap-8 items-center">
             <li>
@@ -132,12 +152,54 @@ const Header = ({
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 animate-fade-in">
             <ul className="flex flex-col gap-4">
-              <li><button onClick={() => scrollToSection('home')} className="text-sm tracking-wider">Главная</button></li>
-              <li><button onClick={() => scrollToSection('catalog')} className="text-sm tracking-wider">Каталог</button></li>
-              <li><button onClick={() => scrollToSection('about')} className="text-sm tracking-wider">О бренде</button></li>
-              <li><button onClick={() => scrollToSection('delivery')} className="text-sm tracking-wider">Доставка</button></li>
-              <li><button onClick={() => scrollToSection('contacts')} className="text-sm tracking-wider">Контакты</button></li>
-              <li><button onClick={() => scrollToSection('wishlist')} className="text-sm tracking-wider">Избранное</button></li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('home'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  Главная
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('catalog'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  Каталог
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('about'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  О бренде
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('delivery'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  Доставка
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('contacts'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  Контакты
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('wishlist'); setIsMenuOpen(false); }} 
+                  className="text-sm tracking-wider w-full text-left py-2"
+                >
+                  Избранное
+                </button>
+              </li>
             </ul>
           </div>
         )}

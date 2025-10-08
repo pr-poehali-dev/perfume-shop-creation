@@ -17,64 +17,64 @@ const HeroSection = ({ scrollToSection }: HeroSectionProps) => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div className="text-center mb-12 md:mb-16 animate-fade-in">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-4 md:mb-6 tracking-tight bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent px-4">
               Искусство
               <br />
               Парфюмерии
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
               Откройте для себя мир изысканных ароматов от легендарных парфюмерных домов.
               <br className="hidden md:block" />
               Каждый флакон — история, воплощенная в аромате.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center px-4">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-10 py-6 text-lg shadow-xl"
+                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 py-5 md:px-10 md:py-6 text-base md:text-lg shadow-xl w-full sm:w-auto"
                 onClick={() => scrollToSection('catalog')}
               >
-                <Icon name="ShoppingBag" size={20} className="mr-2" />
+                <Icon name="ShoppingBag" size={18} className="mr-2" />
                 Перейти в каталог
               </Button>
               
               <Button 
                 size="lg" 
                 variant="outline"
-                className="px-10 py-6 text-lg border-2"
+                className="px-8 py-5 md:px-10 md:py-6 text-base md:text-lg border-2 w-full sm:w-auto"
                 onClick={() => scrollToSection('about')}
               >
-                <Icon name="Info" size={20} className="mr-2" />
+                <Icon name="Info" size={18} className="mr-2" />
                 О нас
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 animate-fade-in">
-            <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Icon name="Award" size={28} className="text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mt-12 md:mt-20 animate-fade-in px-4">
+            <div className="text-center p-5 md:p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Icon name="Award" size={24} className="text-white md:w-7 md:h-7" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Премиум качество</h3>
-              <p className="text-muted-foreground">Только оригинальная продукция от мировых брендов</p>
+              <h3 className="text-lg md:text-xl font-bold mb-2">Премиум качество</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Только оригинальная продукция от мировых брендов</p>
             </div>
 
-            <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-amber-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Icon name="Truck" size={28} className="text-white" />
+            <div className="text-center p-5 md:p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-amber-500/50 transition-all">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Icon name="Truck" size={24} className="text-white md:w-7 md:h-7" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Быстрая доставка</h3>
-              <p className="text-muted-foreground">Доставим ваш заказ в течение 1-3 дней</p>
+              <h3 className="text-lg md:text-xl font-bold mb-2">Быстрая доставка</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Доставим ваш заказ в течение 1-3 дней</p>
             </div>
 
-            <div className="text-center p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
-              <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Icon name="Gift" size={28} className="text-white" />
+            <div className="text-center p-5 md:p-6 bg-card/50 backdrop-blur rounded-2xl border border-border/50 hover:border-rose-500/50 transition-all">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Icon name="Gift" size={24} className="text-white md:w-7 md:h-7" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Подарочная упаковка</h3>
-              <p className="text-muted-foreground">Бесплатная упаковка для каждого заказа</p>
+              <h3 className="text-lg md:text-xl font-bold mb-2">Подарочная упаковка</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Бесплатная упаковка для каждого заказа</p>
             </div>
           </div>
         </div>

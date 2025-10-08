@@ -28,31 +28,36 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
           <WishlistButton perfumeId={perfume.id} />
         </div>
       </div>
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
         <div>
-          <h3 className="text-xl font-semibold mb-2 group-hover:text-accent transition-colors">{perfume.name}</h3>
-          <p className="text-sm text-muted-foreground uppercase tracking-wider">{perfume.brand}</p>
+          <h3 className="text-lg md:text-xl font-semibold mb-1 md:mb-2 group-hover:text-accent transition-colors line-clamp-2">{perfume.name}</h3>
+          <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">{perfume.brand}</p>
         </div>
         
         <div className="flex flex-wrap gap-1.5">
-          {perfume.notes.map((note, index) => (
-            <span key={index} className="text-xs px-3 py-1 bg-muted/50 rounded-full border border-muted-foreground/20">
+          {perfume.notes.slice(0, 3).map((note, index) => (
+            <span key={index} className="text-xs px-2 md:px-3 py-1 bg-muted/50 rounded-full border border-muted-foreground/20">
               {note}
             </span>
           ))}
+          {perfume.notes.length > 3 && (
+            <span className="text-xs px-2 md:px-3 py-1 bg-muted/50 rounded-full border border-muted-foreground/20">
+              +{perfume.notes.length - 3}
+            </span>
+          )}
         </div>
         
         <div className="flex items-baseline gap-2">
-          <p className="text-sm text-muted-foreground">{perfume.volume}</p>
+          <p className="text-xs md:text-sm text-muted-foreground">{perfume.volume}</p>
         </div>
         
-        <div className="pt-4 border-t space-y-3">
+        <div className="pt-3 md:pt-4 border-t space-y-2 md:space-y-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Цена</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+              <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                 {perfume.price.toLocaleString()}
-                <span className="text-lg ml-1">₽</span>
+                <span className="text-base md:text-lg ml-1">₽</span>
               </p>
             </div>
           </div>
@@ -61,16 +66,16 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
               onClick={() => onQuickView(perfume)}
               variant="outline"
               size="icon"
-              className="group-hover:scale-105 transition-transform flex-shrink-0"
+              className="group-hover:scale-105 transition-transform flex-shrink-0 h-9 w-9 md:h-10 md:w-10"
             >
-              <Icon name="Eye" size={18} />
+              <Icon name="Eye" size={16} className="md:w-[18px] md:h-[18px]" />
             </Button>
             <Button 
               onClick={() => onAddToCart(perfume.id)}
-              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform flex-1 px-3 py-2 h-auto"
+              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform flex-1 px-3 py-2 h-9 md:h-auto text-xs md:text-sm"
             >
-              <Icon name="ShoppingCart" size={16} className="mr-1.5" />
-              <span className="text-sm">В корзину</span>
+              <Icon name="ShoppingCart" size={14} className="mr-1.5 md:w-4 md:h-4" />
+              <span>В корзину</span>
             </Button>
           </div>
         </div>

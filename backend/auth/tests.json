@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Valid authentication",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "password": "admin123"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "name": "Invalid authentication",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "password": "wrongpassword"
+      },
+      "expectedStatus": 401
+    },
+    {
+      "name": "OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}

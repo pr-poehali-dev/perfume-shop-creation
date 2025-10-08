@@ -12,13 +12,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 const API_URL = 'https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c';
 const ADMIN_API_URL = 'https://functions.poehali.dev/9ac7bf2c-5f68-4762-89d0-f4b5392107f3';
+const AUTH_API_URL = 'https://functions.poehali.dev/681cc67d-089a-4c22-b1f0-80b99aec3e56';
 
 const Admin = () => {
   const [perfumes, setPerfumes] = useState<Perfume[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPerfume, setEditingPerfume] = useState<Perfume | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const savedAuth = localStorage.getItem('adminAuth');
+    if (savedAuth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -49,8 +60,10 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    fetchPerfumes();
-  }, []);
+    if (isAuthenticated) {
+      fetchPerfumes();
+    }
+  }, [isAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,6 +156,95 @@ const Admin = () => {
     });
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsAuthenticated(true);
+        localStorage.setItem('adminAuth', 'true');
+        toast({
+          title: 'Успешный вход',
+          description: 'Добро пожаловать в админ-панель'
+        });
+      } else {
+        toast({
+          title: 'Ошибка',
+          description: 'Неверный пароль',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось подключиться',
+        variant: 'destructive'
+      });
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('adminAuth');
+    setPassword('');
+    toast({
+      title: 'Выход',
+      description: 'Вы вышли из админ-панели'
+    });
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Авторизация</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="password">Пароль</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Введите пароль"
+                  required
+                  autoFocus
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={authLoading}>
+                {authLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Загрузка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Lock" size={18} className="mr-2" />
+                    Войти
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -159,10 +261,15 @@ const Admin = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Админ-панель</h1>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleLogout}>
+              <Icon name="LogOut" size={18} className="mr-2" />
+              Выйти
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}>
             <DialogTrigger asChild>
               <Button size="lg">
                 <Icon name="Plus" size={20} className="mr-2" />

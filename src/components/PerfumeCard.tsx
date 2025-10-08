@@ -63,11 +63,10 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
             </Button>
             <Button 
               onClick={() => onAddToCart(perfume.id)}
-              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform flex-1"
-              size="lg"
+              className="bg-primary hover:bg-primary/90 group-hover:scale-105 transition-transform flex-1 px-3 py-2 h-auto"
             >
-              <Icon name="ShoppingCart" size={18} className="mr-2" />
-              В корзину
+              <Icon name="ShoppingCart" size={16} className="mr-1.5" />
+              <span className="text-sm">В корзину</span>
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { perfumes, Perfume } from '@/types/perfume';
+import { Perfume } from '@/types/perfume';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
@@ -21,6 +21,29 @@ const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedPerfume, setSelectedPerfume] = useState<Perfume | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [perfumes, setPerfumes] = useState<Perfume[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPerfumes = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c');
+        const data = await response.json();
+        setPerfumes(data);
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+        toast({
+          title: 'Ошибка',
+          description: 'Не удалось загрузить товары',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPerfumes();
+  }, [toast]);
 
   const categories = ['Все', 'Мужской', 'Женский', 'Унисекс'];
   const brands = Array.from(new Set(perfumes.map(p => p.brand)));
@@ -88,6 +111,17 @@ const Index = () => {
     setSelectedPerfume(perfume);
     setIsQuickViewOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

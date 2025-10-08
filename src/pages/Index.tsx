@@ -6,6 +6,7 @@ import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
 import InfoSections from '@/components/InfoSections';
 import PerfumeQuickView from '@/components/PerfumeQuickView';
+import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');

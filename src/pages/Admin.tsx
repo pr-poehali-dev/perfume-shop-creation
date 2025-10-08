@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume } from '@/types/perfume';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import Icon from '@/components/ui/icon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import * as XLSX from 'xlsx';
 
 const API_URL = 'https://functions.poehali.dev/d898a0d3-06c5-4b2d-a26c-c3b447db586c';
 const ADMIN_API_URL = 'https://functions.poehali.dev/9ac7bf2c-5f68-4762-89d0-f4b5392107f3';
@@ -22,6 +23,8 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -156,6 +159,58 @@ const Admin = () => {
     });
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
+
+      const perfumesData = jsonData.map((row: any) => ({
+        name: row['Название'] || row['name'] || '',
+        brand: row['Бренд'] || row['brand'] || '',
+        price: Number(row['Цена'] || row['price'] || 0),
+        category: row['Категория'] || row['category'] || 'Унисекс',
+        volume: row['Объём'] || row['volume'] || '50 мл',
+        notes: typeof row['Ноты'] === 'string' ? row['Ноты'].split(',').map((n: string) => n.trim()) : (row['notes'] || []),
+        image: row['Изображение'] || row['image'] || '/placeholder.svg',
+        concentration: row['Концентрация'] || row['concentration'] || 'Eau de Parfum',
+        availability: row['Наличие'] === 'Да' || row['availability'] === true || row['availability'] === 'true'
+      }));
+
+      for (const perfume of perfumesData) {
+        await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(perfume)
+        });
+      }
+
+      toast({
+        title: 'Успех',
+        description: `Добавлено ${perfumesData.length} товаров`
+      });
+
+      fetchPerfumes();
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось загрузить файл. Проверьте формат Excel',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
@@ -266,6 +321,21 @@ const Admin = () => {
               <Icon name="LogOut" size={18} className="mr-2" />
               Выйти
             </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImporting}
+            >
+              <Icon name="FileUp" size={18} className="mr-2" />
+              {isImporting ? 'Загрузка...' : 'Импорт Excel'}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
               setIsDialogOpen(open);
               if (!open) resetForm();

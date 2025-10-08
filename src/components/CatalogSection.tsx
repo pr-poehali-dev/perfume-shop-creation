@@ -17,9 +17,6 @@ interface CatalogSectionProps {
   brands: string[];
   selectedBrands: string[];
   setSelectedBrands: (brands: string[]) => void;
-  concentrations: string[];
-  selectedConcentrations: string[];
-  setSelectedConcentrations: (concentrations: string[]) => void;
   showOnlyAvailable: boolean;
   setShowOnlyAvailable: (show: boolean) => void;
   sortBy: string;
@@ -38,9 +35,6 @@ const CatalogSection = ({
   brands,
   selectedBrands,
   setSelectedBrands,
-  concentrations,
-  selectedConcentrations,
-  setSelectedConcentrations,
   showOnlyAvailable,
   setShowOnlyAvailable,
   sortBy,
@@ -53,14 +47,6 @@ const CatalogSection = ({
       selectedBrands.includes(brand)
         ? selectedBrands.filter(b => b !== brand)
         : [...selectedBrands, brand]
-    );
-  };
-
-  const toggleConcentration = (concentration: string) => {
-    setSelectedConcentrations(
-      selectedConcentrations.includes(concentration)
-        ? selectedConcentrations.filter(c => c !== concentration)
-        : [...selectedConcentrations, concentration]
     );
   };
   return (
@@ -118,24 +104,6 @@ const CatalogSection = ({
                     />
                     <Label htmlFor={brand} className="text-sm cursor-pointer">
                       {brand}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4 text-lg">Концентрация</h3>
-              <div className="space-y-3">
-                {concentrations.map(concentration => (
-                  <div key={concentration} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={concentration}
-                      checked={selectedConcentrations.includes(concentration)}
-                      onCheckedChange={() => toggleConcentration(concentration)}
-                    />
-                    <Label htmlFor={concentration} className="text-sm cursor-pointer">
-                      {concentration}
                     </Label>
                   </div>
                 ))}

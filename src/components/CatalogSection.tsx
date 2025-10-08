@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import PerfumeCard from './PerfumeCard';
 import SearchBar from './SearchBar';
@@ -76,17 +79,57 @@ const CatalogSection = ({
         : [...selectedVolumes, volume]
     );
   };
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const clearFilters = () => {
+    setSelectedCategory('Все');
+    setPriceRange([0, 20000]);
+    setSelectedBrands([]);
+    setSelectedVolumes([]);
+    setShowOnlyAvailable(false);
+    setSearchQuery('');
+  };
+
+  const activeFiltersCount = 
+    (selectedCategory !== 'Все' ? 1 : 0) +
+    (priceRange[0] !== 0 || priceRange[1] !== 20000 ? 1 : 0) +
+    selectedBrands.length +
+    selectedVolumes.length +
+    (showOnlyAvailable ? 1 : 0);
+
   return (
     <section id="catalog" className="py-12 md:py-20 bg-card">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-5xl font-bold text-center mb-8 md:mb-12">Каталог</h2>
         
-        <div className="mb-6 md:mb-8 max-w-2xl mx-auto">
-          <SearchBar onSearch={setSearchQuery} />
+        <div className="mb-6 md:mb-8">
+          <div className="max-w-2xl mx-auto mb-4">
+            <SearchBar onSearch={setSearchQuery} />
+          </div>
+          
+          <div className="flex items-center justify-center gap-2 lg:hidden">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2"
+            >
+              <Icon name="SlidersHorizontal" size={16} />
+              Фильтры
+              {activeFiltersCount > 0 && (
+                <Badge variant="secondary" className="ml-1">{activeFiltersCount}</Badge>
+              )}
+            </Button>
+            {activeFiltersCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                Сбросить
+              </Button>
+            )}
+          </div>
         </div>
         
         <div className="grid lg:grid-cols-4 gap-6 md:gap-8 mb-12">
-          <div className="lg:col-span-1 space-y-4 md:space-y-6">
+          <div className={`lg:col-span-1 space-y-4 md:space-y-6 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}>
             <Card className="p-4 md:p-6">
               <h3 className="font-semibold mb-3 md:mb-4 text-base md:text-lg">Категория</h3>
               <div className="space-y-2">
@@ -175,9 +218,22 @@ const CatalogSection = ({
 
           <div className="lg:col-span-3">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6">
-              <p className="text-sm md:text-base text-muted-foreground">
-                Найдено: <span className="font-semibold text-foreground">{filteredPerfumes.length}</span> товаров
-              </p>
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Найдено: <span className="font-semibold text-foreground">{filteredPerfumes.length}</span> товаров
+                </p>
+                {activeFiltersCount > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={clearFilters}
+                    className="h-8 text-xs hidden lg:flex"
+                  >
+                    <Icon name="X" size={14} className="mr-1" />
+                    Сбросить фильтры
+                  </Button>
+                )}
+              </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Icon name="ArrowUpDown" size={16} className="text-muted-foreground hidden sm:block" />
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -189,6 +245,8 @@ const CatalogSection = ({
                     <SelectItem value="price-asc">Цена: по возрастанию</SelectItem>
                     <SelectItem value="price-desc">Цена: по убыванию</SelectItem>
                     <SelectItem value="name">По названию</SelectItem>
+                    <SelectItem value="rating">По рейтингу</SelectItem>
+                    <SelectItem value="discount">По скидке</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

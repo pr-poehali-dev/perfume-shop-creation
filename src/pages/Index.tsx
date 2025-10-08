@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume, Review } from '@/types/perfume';
+import { Order, OrderItem } from '@/types/order';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
@@ -10,7 +11,10 @@ import CheckoutModal from '@/components/CheckoutModal';
 import WishlistSection from '@/components/WishlistSection';
 import RecentlyViewedSection from '@/components/RecentlyViewedSection';
 import ComparisonSection from '@/components/ComparisonSection';
+import AdminPanel from '@/components/AdminPanel';
+import UserProfile from '@/components/UserProfile';
 import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Index = () => {
@@ -43,6 +47,13 @@ const Index = () => {
     const saved = localStorage.getItem('comparison');
     return saved ? JSON.parse(saved) : [];
   });
+  const [orders, setOrders] = useState<Order[]>(() => {
+    const saved = localStorage.getItem('orders');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
 
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
@@ -55,6 +66,21 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
   }, [recentlyViewed]);
+
+  useEffect(() => {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const toggleWishlist = (id: number) => {
     const perfume = perfumes.find(p => p.id === id);
@@ -150,17 +176,6 @@ const Index = () => {
     fetchPerfumes();
   }, [toast]);
 
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
   const categories = useMemo(() => ['Все', 'Мужской', 'Женский', 'Унисекс'], []);
   const brands = useMemo(() => Array.from(new Set(perfumes.map(p => p.brand))), [perfumes]);
   const volumes = useMemo(() => Array.from(new Set(perfumes.map(p => p.volume))), [perfumes]);
@@ -180,6 +195,8 @@ const Index = () => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
       if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+      if (sortBy === 'discount') return (b.discount || 0) - (a.discount || 0);
       return 0;
     });
   }, [perfumes, selectedCategory, priceRange, selectedBrands, selectedVolumes, showOnlyAvailable, searchQuery, sortBy]);
@@ -247,14 +264,54 @@ const Index = () => {
     setIsCheckoutOpen(true);
   }, []);
 
-  const handleOrderComplete = useCallback(() => {
+  const handleOrderComplete = useCallback((orderId: string) => {
+    const newOrder: Order = {
+      id: orderId,
+      date: new Date().toISOString(),
+      status: 'pending',
+      customer: {
+        name: localStorage.getItem('userName') || '',
+        email: localStorage.getItem('userEmail') || '',
+        phone: localStorage.getItem('userPhone') || '',
+        address: localStorage.getItem('userAddress') || '',
+      },
+      items: cartItems.map((item): OrderItem => ({
+        id: item.id,
+        perfumeId: item.id,
+        name: item.name,
+        brand: item.brand,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      })),
+      total: totalPrice,
+      paymentMethod: 'card',
+    };
+
+    setOrders(prev => [newOrder, ...prev]);
     setCart([]);
     setIsCheckoutOpen(false);
+    
     toast({
       title: 'Заказ оформлен!',
-      description: 'Мы свяжемся с вами в ближайшее время',
+      description: `Заказ #${orderId} принят в обработку`,
     });
-  }, [toast]);
+  }, [cartItems, totalPrice, toast]);
+
+  const openAdminPanel = () => {
+    const password = prompt('Введите пароль администратора:');
+    if (password === 'admin123') {
+      setIsAdminOpen(true);
+    } else if (password) {
+      toast({
+        title: 'Ошибка',
+        description: 'Неверный пароль',
+        variant: 'destructive'
+      });
+    }
+  };
+
+
 
   if (loading) {
     return (
@@ -360,6 +417,39 @@ const Index = () => {
         totalPrice={totalPrice}
         onOrderComplete={handleOrderComplete}
       />
+
+      <AdminPanel
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
+        perfumes={perfumes}
+        setPerfumes={setPerfumes}
+        orders={orders}
+        setOrders={setOrders}
+      />
+
+      <UserProfile
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        orders={orders}
+      />
+
+      <Button
+        onClick={() => setIsProfileOpen(true)}
+        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-2xl"
+        title="Личный кабинет"
+      >
+        <Icon name="User" size={20} />
+      </Button>
+
+      <Button
+        onClick={openAdminPanel}
+        variant="outline"
+        className="fixed bottom-24 right-6 z-40 h-12 w-12 rounded-full shadow-xl hidden"
+        title="Админ-панель"
+        onDoubleClick={() => setIsAdminOpen(true)}
+      >
+        <Icon name="Settings" size={18} />
+      </Button>
 
       <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16" role="contentinfo">
         <div className="container mx-auto px-4">

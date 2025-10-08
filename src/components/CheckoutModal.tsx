@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,16 +14,18 @@ interface CheckoutModalProps {
   onClose: () => void;
   cartItems: (Perfume & { quantity: number })[];
   totalPrice: number;
-  onOrderComplete: () => void;
+  onOrderComplete: (orderId: string) => void;
 }
 
 const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete }: CheckoutModalProps) => {
   const [step, setStep] = useState(1);
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{code: string, discount: number} | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
+    name: localStorage.getItem('userName') || '',
+    phone: localStorage.getItem('userPhone') || '',
+    email: localStorage.getItem('userEmail') || '',
+    address: localStorage.getItem('userAddress') || '',
     city: '',
     postalCode: '',
     comment: '',
@@ -31,63 +33,53 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete
     paymentMethod: 'card'
   });
 
+  const promoCodes: Record<string, number> = {
+    'WELCOME10': 10,
+    'SALE20': 20,
+    'VIP30': 30,
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        name: localStorage.getItem('userName') || prev.name,
+        phone: localStorage.getItem('userPhone') || prev.phone,
+        email: localStorage.getItem('userEmail') || prev.email,
+        address: localStorage.getItem('userAddress') || prev.address,
+      }));
+    }
+  }, [isOpen]);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      const orderData = {
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        deliveryMethod: formData.deliveryMethod,
-        address: formData.address,
-        city: formData.city,
-        postalCode: formData.postalCode,
-        comment: formData.comment,
-        paymentMethod: formData.paymentMethod,
-        totalAmount: finalTotal,
-        deliveryPrice: deliveryPrice,
-        items: cartItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          brand: item.brand,
-          quantity: item.quantity,
-          price: item.price
-        }))
-      };
-
-      const response = await fetch('https://functions.poehali.dev/f455a892-eab2-4810-a681-80bd25f2e3f1', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-      });
-
-      if (response.ok) {
-        onOrderComplete();
-        setStep(1);
-        setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          address: '',
-          city: '',
-          postalCode: '',
-          comment: '',
-          deliveryMethod: 'courier',
-          paymentMethod: 'card'
-        });
-      }
-    } catch (error) {
-      console.error('Order submission error:', error);
+  const applyPromoCode = () => {
+    const discount = promoCodes[promoCode.toUpperCase()];
+    if (discount) {
+      setAppliedPromo({ code: promoCode.toUpperCase(), discount });
+    } else {
+      setAppliedPromo(null);
     }
   };
 
+  const handleSubmit = async () => {
+    localStorage.setItem('userName', formData.name);
+    localStorage.setItem('userPhone', formData.phone);
+    localStorage.setItem('userEmail', formData.email);
+    localStorage.setItem('userAddress', formData.address);
+
+    const orderId = 'ORD-' + Date.now();
+    onOrderComplete(orderId);
+    setStep(1);
+    setPromoCode('');
+    setAppliedPromo(null);
+  };
+
   const deliveryPrice = formData.deliveryMethod === 'courier' ? (totalPrice >= 5000 ? 0 : 500) : 300;
-  const finalTotal = totalPrice + deliveryPrice;
+  const discount = appliedPromo ? Math.round(totalPrice * appliedPromo.discount / 100) : 0;
+  const finalTotal = totalPrice - discount + deliveryPrice;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -304,11 +296,52 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalPrice, onOrderComplete
 
               <Separator />
 
+              <div>
+                <Label className="text-sm md:text-base mb-2">Промокод</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    placeholder="Введите промокод"
+                    className="h-9 text-sm"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={applyPromoCode}
+                    className="whitespace-nowrap"
+                  >
+                    Применить
+                  </Button>
+                </div>
+                {appliedPromo && (
+                  <p className="text-xs text-green-600 mt-1">
+                    Промокод {appliedPromo.code} применён (-{appliedPromo.discount}%)
+                  </p>
+                )}
+                {promoCode && !appliedPromo && promoCodes[promoCode.toUpperCase()] === undefined && (
+                  <p className="text-xs text-red-600 mt-1">
+                    Неверный промокод
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground mt-2">
+                  Доступные: WELCOME10, SALE20, VIP30
+                </p>
+              </div>
+
+              <Separator />
+
               <div className="space-y-2">
                 <div className="flex justify-between text-xs md:text-sm">
                   <span className="text-muted-foreground">Товары</span>
                   <span>{totalPrice.toLocaleString()} ₽</span>
                 </div>
+                {appliedPromo && (
+                  <div className="flex justify-between text-xs md:text-sm text-green-600">
+                    <span>Скидка ({appliedPromo.discount}%)</span>
+                    <span>-{discount.toLocaleString()} ₽</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs md:text-sm">
                   <span className="text-muted-foreground">Доставка</span>
                   <span>{deliveryPrice === 0 ? 'Бесплатно' : `${deliveryPrice} ₽`}</span>

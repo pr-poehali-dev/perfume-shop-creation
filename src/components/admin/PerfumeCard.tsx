@@ -45,10 +45,6 @@ export const PerfumeCard = ({ perfume, onEdit, onDelete }: PerfumeCardProps) => 
             <p className="text-muted-foreground">Объём</p>
             <p className="font-semibold">{perfume.volume}</p>
           </div>
-          <div className="col-span-2">
-            <p className="text-muted-foreground">Ноты</p>
-            <p className="font-semibold">{perfume.notes.join(', ')}</p>
-          </div>
           <div>
             <p className="text-muted-foreground">Наличие</p>
             <p className="font-semibold">{perfume.availability ? '✅ В наличии' : '❌ Нет'}</p>

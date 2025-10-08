@@ -31,23 +31,7 @@ const PerfumeCard = ({ perfume, onAddToCart, onQuickView }: PerfumeCardProps) =>
       <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
         <div>
           <h3 className="text-lg md:text-xl font-semibold mb-1 md:mb-2 group-hover:text-accent transition-colors line-clamp-2">{perfume.name}</h3>
-          <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">{perfume.brand}</p>
-        </div>
-        
-        <div className="flex flex-wrap gap-1.5">
-          {perfume.notes.slice(0, 3).map((note, index) => (
-            <span key={index} className="text-xs px-2 md:px-3 py-1 bg-muted/50 rounded-full border border-muted-foreground/20">
-              {note}
-            </span>
-          ))}
-          {perfume.notes.length > 3 && (
-            <span className="text-xs px-2 md:px-3 py-1 bg-muted/50 rounded-full border border-muted-foreground/20">
-              +{perfume.notes.length - 3}
-            </span>
-          )}
-        </div>
-        
-        <div className="flex items-baseline gap-2">
+          <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider mb-2">{perfume.brand}</p>
           <p className="text-xs md:text-sm text-muted-foreground">{perfume.volume}</p>
         </div>
         

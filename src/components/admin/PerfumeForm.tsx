@@ -84,22 +84,12 @@ export const PerfumeForm = ({ formData, setFormData, onSubmit, onCancel, isEditi
       </div>
 
       <div>
-        <Label htmlFor="notes">Ноты (через запятую)</Label>
-        <Input
-          id="notes"
-          value={formData.notes}
-          onChange={(e) => setFormData({...formData, notes: e.target.value})}
-          placeholder="Бергамот, Роза, Пачули"
-          required
-        />
-      </div>
-
-      <div>
         <Label htmlFor="concentration">Концентрация</Label>
         <Input
           id="concentration"
           value={formData.concentration}
           onChange={(e) => setFormData({...formData, concentration: e.target.value})}
+          placeholder="Eau de Parfum"
         />
       </div>
 

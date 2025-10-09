@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { Order } from '@/types/order';
+import LoyaltySystem from '@/components/LoyaltySystem';
 
 interface UserProfileProps {
   isOpen: boolean;
@@ -48,6 +49,7 @@ const UserProfile = ({ isOpen, onClose, orders }: UserProfileProps) => {
   };
 
   const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
+  const orderCount = orders.length;
   const completedOrders = orders.filter(o => o.status === 'delivered').length;
 
   return (
@@ -91,10 +93,14 @@ const UserProfile = ({ isOpen, onClose, orders }: UserProfileProps) => {
           </div>
 
           <Tabs defaultValue="orders">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="orders">
                 <Icon name="ShoppingBag" size={16} className="mr-2" />
                 Мои заказы
+              </TabsTrigger>
+              <TabsTrigger value="loyalty">
+                <Icon name="Award" size={16} className="mr-2" />
+                Бонусы
               </TabsTrigger>
               <TabsTrigger value="profile">
                 <Icon name="Settings" size={16} className="mr-2" />
@@ -148,6 +154,10 @@ const UserProfile = ({ isOpen, onClose, orders }: UserProfileProps) => {
                   </Card>
                 ))
               )}
+            </TabsContent>
+
+            <TabsContent value="loyalty" className="mt-4">
+              <LoyaltySystem totalSpent={totalSpent} orderCount={orderCount} />
             </TabsContent>
 
             <TabsContent value="profile" className="mt-4">

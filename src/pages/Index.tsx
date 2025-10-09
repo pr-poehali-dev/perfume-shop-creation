@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Perfume, Review } from '@/types/perfume';
 import { Order, OrderItem } from '@/types/order';
+import { Notification } from '@/types/notification';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
@@ -13,8 +14,15 @@ import RecentlyViewedSection from '@/components/RecentlyViewedSection';
 import ComparisonSection from '@/components/ComparisonSection';
 import AdminPanel from '@/components/AdminPanel';
 import UserProfile from '@/components/UserProfile';
+import NotificationCenter from '@/components/NotificationCenter';
+import RecommendationEngine from '@/components/RecommendationEngine';
+import LiveChat from '@/components/LiveChat';
+import FAQSection from '@/components/FAQSection';
+import PromoTimer from '@/components/PromoTimer';
+import NewsletterSubscription from '@/components/NewsletterSubscription';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Index = () => {
@@ -54,6 +62,23 @@ const Index = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: '1',
+        type: 'discount',
+        title: 'Специальное предложение!',
+        message: 'Скидка 30% на всю парфюмерию по промокоду VIP30',
+        date: new Date().toISOString(),
+        read: false,
+        actionLabel: 'Использовать промокод',
+      },
+    ];
+  });
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const promoEndDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
 
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
@@ -82,6 +107,10 @@ const Index = () => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
   const toggleWishlist = (id: number) => {
     const perfume = perfumes.find(p => p.id === id);
     const isAdding = !wishlist.includes(id);
@@ -94,6 +123,16 @@ const Index = () => {
       title: isAdding ? 'Добавлено в избранное' : 'Удалено из избранного',
       description: perfume?.name,
     });
+
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      type: 'wishlist',
+      title: isAdding ? 'Товар добавлен в избранное' : 'Товар удален из избранного',
+      message: perfume?.name || '',
+      date: new Date().toISOString(),
+      read: false,
+    };
+    setNotifications(prev => [newNotification, ...prev]);
   };
 
   const toggleComparison = (id: number) => {
@@ -217,6 +256,16 @@ const Index = () => {
         description: perfume ? `${perfume.name} — ${perfume.price.toLocaleString()} ₽` : 'Товар успешно добавлен',
       });
     }
+
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      type: 'order',
+      title: 'Товар добавлен в корзину',
+      message: perfume?.name || '',
+      date: new Date().toISOString(),
+      read: false,
+    };
+    setNotifications(prev => [newNotification, ...prev]);
   };
 
   const removeFromCart = (id: number) => {
@@ -296,7 +345,28 @@ const Index = () => {
       title: 'Заказ оформлен!',
       description: `Заказ #${orderId} принят в обработку`,
     });
+
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      type: 'order',
+      title: 'Заказ успешно оформлен',
+      message: `Заказ #${orderId} принят в обработку. Скоро мы свяжемся с вами.`,
+      date: new Date().toISOString(),
+      read: false,
+      actionLabel: 'Посмотреть заказ',
+    };
+    setNotifications(prev => [newNotification, ...prev]);
   }, [cartItems, totalPrice, toast]);
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   const openAdminPanel = () => {
     const password = prompt('Введите пароль администратора:');
@@ -380,6 +450,23 @@ const Index = () => {
           wishlist={wishlist}
         />
 
+        <div className="container mx-auto px-4 my-8">
+          <PromoTimer
+            endDate={promoEndDate}
+            title="Флеш-распродажа"
+            discount={30}
+          />
+        </div>
+
+        <RecommendationEngine
+          perfumes={perfumes}
+          cart={cart}
+          wishlist={wishlist}
+          recentlyViewed={recentlyViewed}
+          onAddToCart={addToCart}
+          onQuickView={handleQuickView}
+        />
+
         <WishlistSection 
           perfumes={perfumes}
           addToCart={addToCart}
@@ -387,6 +474,10 @@ const Index = () => {
           wishlist={wishlist}
           toggleWishlist={toggleWishlist}
         />
+
+        <NewsletterSubscription />
+
+        <FAQSection />
 
         <InfoSections />
       </main>
@@ -433,23 +524,59 @@ const Index = () => {
         orders={orders}
       />
 
-      <Button
-        onClick={() => setIsProfileOpen(true)}
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-2xl"
-        title="Личный кабинет"
-      >
-        <Icon name="User" size={20} />
-      </Button>
+      <NotificationCenter
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={markNotificationAsRead}
+        onClearAll={clearAllNotifications}
+      />
 
-      <Button
-        onClick={openAdminPanel}
-        variant="outline"
-        className="fixed bottom-24 right-6 z-40 h-12 w-12 rounded-full shadow-xl hidden"
-        title="Админ-панель"
-        onDoubleClick={() => setIsAdminOpen(true)}
-      >
-        <Icon name="Settings" size={18} />
-      </Button>
+      <LiveChat
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
+
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        <Button
+          onClick={() => setIsNotificationsOpen(true)}
+          className="h-14 w-14 rounded-full shadow-2xl relative"
+          title="Уведомления"
+        >
+          <Icon name="Bell" size={20} />
+          {unreadNotificationsCount > 0 && (
+            <Badge className="absolute -top-1 -right-1 h-6 w-6 flex items-center justify-center p-0 text-xs">
+              {unreadNotificationsCount}
+            </Badge>
+          )}
+        </Button>
+
+        <Button
+          onClick={() => setIsChatOpen(true)}
+          className="h-14 w-14 rounded-full shadow-2xl bg-green-500 hover:bg-green-600"
+          title="Онлайн-чат"
+        >
+          <Icon name="MessageCircle" size={20} />
+        </Button>
+
+        <Button
+          onClick={() => setIsProfileOpen(true)}
+          className="h-14 w-14 rounded-full shadow-2xl"
+          title="Личный кабинет"
+        >
+          <Icon name="User" size={20} />
+        </Button>
+
+        <Button
+          onClick={openAdminPanel}
+          variant="outline"
+          className="h-12 w-12 rounded-full shadow-xl hidden"
+          title="Админ-панель"
+          onDoubleClick={() => setIsAdminOpen(true)}
+        >
+          <Icon name="Settings" size={18} />
+        </Button>
+      </div>
 
       <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16" role="contentinfo">
         <div className="container mx-auto px-4">

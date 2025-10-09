@@ -5,6 +5,8 @@ export interface Review {
   date: string;
   text: string;
   helpful: number;
+  images?: string[];
+  verified?: boolean;
 }
 
 export interface Perfume {

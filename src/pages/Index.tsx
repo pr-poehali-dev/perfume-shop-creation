@@ -37,10 +37,7 @@ const Index = () => {
     orders,
     isAdminOpen,
     isProfileOpen,
-    notifications,
-    isNotificationsOpen,
     isChatOpen,
-    promoEndDate,
     setSelectedCategory,
     setPriceRange,
     setSelectedBrands,
@@ -57,7 +54,6 @@ const Index = () => {
     setOrders,
     setIsAdminOpen,
     setIsProfileOpen,
-    setIsNotificationsOpen,
     setIsChatOpen,
     setCart,
     setActiveSection,
@@ -65,7 +61,6 @@ const Index = () => {
     setRecentlyViewed,
     setWishlist,
     setComparison,
-    setNotifications,
   } = state;
 
   useScrollAnimation();
@@ -76,7 +71,6 @@ const Index = () => {
     recentlyViewed,
     orders,
     cart,
-    notifications,
     setPerfumes,
     setLoading,
     setCart,
@@ -133,7 +127,6 @@ const Index = () => {
     setIsQuickViewOpen,
     setRecentlyViewed,
     setOrders,
-    setNotifications,
     setIsAdminOpen,
     cartItems,
     totalPrice,
@@ -151,12 +144,8 @@ const Index = () => {
     handleQuickView,
     handleCheckout,
     handleOrderComplete,
-    markNotificationAsRead,
-    clearAllNotifications,
     openAdminPanel,
   } = handlers;
-
-  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   if (loading) {
     return (
@@ -215,7 +204,6 @@ const Index = () => {
         perfumes={perfumes}
         recentlyViewed={recentlyViewed}
         cart={cart}
-        promoEndDate={promoEndDate}
       />
 
       <IndexModals
@@ -241,18 +229,11 @@ const Index = () => {
         setOrders={setOrders}
         isProfileOpen={isProfileOpen}
         setIsProfileOpen={setIsProfileOpen}
-        isNotificationsOpen={isNotificationsOpen}
-        setIsNotificationsOpen={setIsNotificationsOpen}
-        notifications={notifications}
-        markNotificationAsRead={markNotificationAsRead}
-        clearAllNotifications={clearAllNotifications}
         isChatOpen={isChatOpen}
         setIsChatOpen={setIsChatOpen}
       />
 
       <IndexFloatingButtons
-        setIsNotificationsOpen={setIsNotificationsOpen}
-        unreadNotificationsCount={unreadNotificationsCount}
         setIsChatOpen={setIsChatOpen}
         setIsProfileOpen={setIsProfileOpen}
         openAdminPanel={openAdminPanel}

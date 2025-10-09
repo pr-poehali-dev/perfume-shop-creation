@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Perfume } from '@/types/perfume';
 import { Order } from '@/types/order';
-import { Notification } from '@/types/notification';
 
 interface UseIndexEffectsProps {
   wishlist: number[];
@@ -9,7 +8,6 @@ interface UseIndexEffectsProps {
   recentlyViewed: number[];
   orders: Order[];
   cart: { id: number; quantity: number }[];
-  notifications: Notification[];
   setPerfumes: (perfumes: Perfume[]) => void;
   setLoading: (loading: boolean) => void;
   setCart: (cart: { id: number; quantity: number }[]) => void;
@@ -22,7 +20,6 @@ export const useIndexEffects = ({
   recentlyViewed,
   orders,
   cart,
-  notifications,
   setPerfumes,
   setLoading,
   setCart,
@@ -54,10 +51,6 @@ export const useIndexEffects = ({
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem('notifications', JSON.stringify(notifications));
-  }, [notifications]);
 
   useEffect(() => {
     const fetchPerfumes = async () => {

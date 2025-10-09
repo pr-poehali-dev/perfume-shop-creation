@@ -25,30 +25,6 @@ const ReviewsSection = ({ perfumeId, reviews, onAddReview }: ReviewsSectionProps
   const [rating, setRating] = useState('5');
   const [text, setText] = useState('');
   const [sortBy, setSortBy] = useState('recent');
-  const [images, setImages] = useState<string[]>([]);
-  const [uploadingImages, setUploadingImages] = useState(false);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    setUploadingImages(true);
-    
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImages(prev => [...prev, event.target!.result as string]);
-        }
-        setUploadingImages(false);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = () => {
     if (!author.trim() || !text.trim()) return;
@@ -58,14 +34,11 @@ const ReviewsSection = ({ perfumeId, reviews, onAddReview }: ReviewsSectionProps
       rating: parseInt(rating),
       date: new Date().toISOString(),
       text: text.trim(),
-      images: images.length > 0 ? images : undefined,
-      verified: true,
     });
 
     setAuthor('');
     setRating('5');
     setText('');
-    setImages([]);
     setIsWriting(false);
   };
 
@@ -186,41 +159,6 @@ const ReviewsSection = ({ perfumeId, reviews, onAddReview }: ReviewsSectionProps
                 rows={4}
               />
 
-              <div>
-                <label htmlFor="review-images" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-muted rounded-lg p-4 hover:border-primary transition-colors flex items-center justify-center gap-2">
-                    <Icon name="Image" size={20} />
-                    <span className="text-sm text-muted-foreground">
-                      {uploadingImages ? 'Загрузка...' : 'Добавить фото (+100 бонусов)'}
-                    </span>
-                  </div>
-                </label>
-                <input
-                  id="review-images"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </div>
-
-              {images.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative w-20 h-20 rounded-lg overflow-hidden border">
-                      <img src={img} alt={`Превью ${index + 1}`} className="w-full h-full object-cover" />
-                      <button
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <Icon name="X" size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               <div className="flex gap-2">
                 <Button onClick={handleSubmit} disabled={!author.trim() || !text.trim()}>
                   Отправить отзыв
@@ -242,12 +180,6 @@ const ReviewsSection = ({ perfumeId, reviews, onAddReview }: ReviewsSectionProps
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold">{review.author}</span>
-                    {review.verified && (
-                      <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-                        <Icon name="BadgeCheck" size={12} />
-                        <span>Покупатель</span>
-                      </div>
-                    )}
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Icon
@@ -271,17 +203,7 @@ const ReviewsSection = ({ perfumeId, reviews, onAddReview }: ReviewsSectionProps
 
               <p className="text-sm leading-relaxed mb-3">{review.text}</p>
 
-              {review.images && review.images.length > 0 && (
-                <div className="flex gap-2 mb-3 flex-wrap">
-                  {review.images.map((img, index) => (
-                    <div key={index} className="w-24 h-24 rounded-lg overflow-hidden border cursor-pointer hover:opacity-80 transition-opacity">
-                      <img src={img} alt={`Фото ${index + 1}`} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <button className="flex items-center gap-1 hover:text-foreground transition-colors">
                   <Icon name="ThumbsUp" size={14} />
                   Полезно ({review.helpful})

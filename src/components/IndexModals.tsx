@@ -1,12 +1,10 @@
 import { Perfume, Review } from '@/types/perfume';
 import { Order } from '@/types/order';
-import { Notification } from '@/types/notification';
 import PerfumeQuickView from '@/components/PerfumeQuickView';
 import ComparisonSection from '@/components/ComparisonSection';
 import CheckoutModal from '@/components/CheckoutModal';
 import AdminPanel from '@/components/AdminPanel';
 import UserProfile from '@/components/UserProfile';
-import NotificationCenter from '@/components/NotificationCenter';
 import LiveChat from '@/components/LiveChat';
 
 interface IndexModalsProps {
@@ -32,11 +30,6 @@ interface IndexModalsProps {
   setOrders: (orders: Order[]) => void;
   isProfileOpen: boolean;
   setIsProfileOpen: (open: boolean) => void;
-  isNotificationsOpen: boolean;
-  setIsNotificationsOpen: (open: boolean) => void;
-  notifications: Notification[];
-  markNotificationAsRead: (id: string) => void;
-  clearAllNotifications: () => void;
   isChatOpen: boolean;
   setIsChatOpen: (open: boolean) => void;
 }
@@ -64,11 +57,6 @@ const IndexModals = ({
   setOrders,
   isProfileOpen,
   setIsProfileOpen,
-  isNotificationsOpen,
-  setIsNotificationsOpen,
-  notifications,
-  markNotificationAsRead,
-  clearAllNotifications,
   isChatOpen,
   setIsChatOpen,
 }: IndexModalsProps) => {
@@ -114,14 +102,6 @@ const IndexModals = ({
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
         orders={orders}
-      />
-
-      <NotificationCenter
-        isOpen={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-        notifications={notifications}
-        onMarkAsRead={markNotificationAsRead}
-        onClearAll={clearAllNotifications}
       />
 
       <LiveChat

@@ -2,11 +2,9 @@ import { Perfume } from '@/types/perfume';
 import HeroSection from '@/components/HeroSection';
 import CatalogSection from '@/components/CatalogSection';
 import RecentlyViewedSection from '@/components/RecentlyViewedSection';
-import PromoTimer from '@/components/PromoTimer';
 import RecommendationEngine from '@/components/RecommendationEngine';
 import WishlistSection from '@/components/WishlistSection';
 import NewsletterSubscription from '@/components/NewsletterSubscription';
-import FAQSection from '@/components/FAQSection';
 import InfoSections from '@/components/InfoSections';
 
 interface IndexMainContentProps {
@@ -38,7 +36,6 @@ interface IndexMainContentProps {
   perfumes: Perfume[];
   recentlyViewed: number[];
   cart: { id: number; quantity: number }[];
-  promoEndDate: string;
 }
 
 const IndexMainContent = ({
@@ -70,7 +67,6 @@ const IndexMainContent = ({
   perfumes,
   recentlyViewed,
   cart,
-  promoEndDate,
 }: IndexMainContentProps) => {
   return (
     <main className="pt-16">
@@ -112,14 +108,6 @@ const IndexMainContent = ({
         wishlist={wishlist}
       />
 
-      <div className="container mx-auto px-4 my-8">
-        <PromoTimer
-          endDate={promoEndDate}
-          title="Флеш-распродажа"
-          discount={30}
-        />
-      </div>
-
       <RecommendationEngine
         perfumes={perfumes}
         cart={cart}
@@ -138,8 +126,6 @@ const IndexMainContent = ({
       />
 
       <NewsletterSubscription />
-
-      <FAQSection />
 
       <InfoSections />
     </main>

@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { Perfume, Review } from '@/types/perfume';
 import { Order, OrderItem } from '@/types/order';
-import { Notification } from '@/types/notification';
 
 interface UseIndexHandlersProps {
   perfumes: Perfume[];
@@ -20,7 +19,6 @@ interface UseIndexHandlersProps {
   setIsQuickViewOpen: (open: boolean) => void;
   setRecentlyViewed: (viewed: number[]) => void;
   setOrders: (orders: Order[]) => void;
-  setNotifications: (notifications: Notification[]) => void;
   setIsAdminOpen: (open: boolean) => void;
   cartItems: any[];
   totalPrice: number;
@@ -44,7 +42,6 @@ export const useIndexHandlers = ({
   setIsQuickViewOpen,
   setRecentlyViewed,
   setOrders,
-  setNotifications,
   setIsAdminOpen,
   cartItems,
   totalPrice,
@@ -62,16 +59,6 @@ export const useIndexHandlers = ({
       title: isAdding ? 'Добавлено в избранное' : 'Удалено из избранного',
       description: perfume?.name,
     });
-
-    const newNotification: Notification = {
-      id: Date.now().toString(),
-      type: 'wishlist',
-      title: isAdding ? 'Товар добавлен в избранное' : 'Товар удален из избранного',
-      message: perfume?.name || '',
-      date: new Date().toISOString(),
-      read: false,
-    };
-    setNotifications(prev => [newNotification, ...prev]);
   };
 
   const toggleComparison = (id: number) => {
@@ -136,16 +123,6 @@ export const useIndexHandlers = ({
         description: perfume ? `${perfume.name} — ${perfume.price.toLocaleString()} ₽` : 'Товар успешно добавлен',
       });
     }
-
-    const newNotification: Notification = {
-      id: Date.now().toString(),
-      type: 'order',
-      title: 'Товар добавлен в корзину',
-      message: perfume?.name || '',
-      date: new Date().toISOString(),
-      read: false,
-    };
-    setNotifications(prev => [newNotification, ...prev]);
   };
 
   const removeFromCart = (id: number) => {
@@ -217,26 +194,7 @@ export const useIndexHandlers = ({
       title: 'Заказ оформлен!',
       description: `Заказ #${orderId} принят в обработку`,
     });
-
-    const newNotification: Notification = {
-      id: Date.now().toString(),
-      type: 'order',
-      title: 'Заказ успешно оформлен',
-      message: `Заказ #${orderId} принят в обработку. Скоро мы свяжемся с вами.`,
-      date: new Date().toISOString(),
-      read: false,
-      actionLabel: 'Посмотреть заказ',
-    };
-    setNotifications(prev => [newNotification, ...prev]);
-  }, [cartItems, totalPrice, toast, setOrders, setCart, setIsCheckoutOpen, setNotifications]);
-
-  const markNotificationAsRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
+  }, [cartItems, totalPrice, toast, setOrders, setCart, setIsCheckoutOpen]);
 
   const openAdminPanel = () => {
     const password = prompt('Введите пароль администратора:');
@@ -262,8 +220,6 @@ export const useIndexHandlers = ({
     handleQuickView,
     handleCheckout,
     handleOrderComplete,
-    markNotificationAsRead,
-    clearAllNotifications,
     openAdminPanel,
   };
 };

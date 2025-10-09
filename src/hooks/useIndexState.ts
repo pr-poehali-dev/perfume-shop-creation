@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Perfume } from '@/types/perfume';
 import { Order } from '@/types/order';
-import { Notification } from '@/types/notification';
 
 export const useIndexState = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -39,23 +38,7 @@ export const useIndexState = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
-  const [notifications, setNotifications] = useState<Notification[]>(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: '1',
-        type: 'discount',
-        title: 'Специальное предложение!',
-        message: 'Скидка 30% на всю парфюмерию по промокоду VIP30',
-        date: new Date().toISOString(),
-        read: false,
-        actionLabel: 'Использовать промокод',
-      },
-    ];
-  });
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const promoEndDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
 
   return {
     activeSection, setActiveSection,
@@ -81,9 +64,6 @@ export const useIndexState = () => {
     isAdminOpen, setIsAdminOpen,
     isProfileOpen, setIsProfileOpen,
     adminPassword, setAdminPassword,
-    notifications, setNotifications,
-    isNotificationsOpen, setIsNotificationsOpen,
     isChatOpen, setIsChatOpen,
-    promoEndDate,
   };
 };

@@ -81,6 +81,18 @@ const CatalogSection = ({
   };
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  const totalPages = Math.ceil(filteredPerfumes.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPerfumes = filteredPerfumes.slice(startIndex, endIndex);
+
+  // Сброс страницы при изменении фильтров
+  const handleFilterChange = () => {
+    setCurrentPage(1);
+  };
 
   const clearFilters = () => {
     setSelectedCategory('Все');
@@ -89,6 +101,7 @@ const CatalogSection = ({
     setSelectedVolumes([]);
     setShowOnlyAvailable(false);
     setSearchQuery('');
+    setCurrentPage(1);
   };
 
   const activeFiltersCount = 
@@ -136,7 +149,10 @@ const CatalogSection = ({
                 {categories.map(category => (
                   <button
                     key={category}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      handleFilterChange();
+                    }}
                     className={`w-full text-left px-4 py-2 rounded-md transition-colors ${
                       selectedCategory === category 
                         ? 'bg-primary text-primary-foreground' 
@@ -154,7 +170,10 @@ const CatalogSection = ({
               <div className="space-y-4">
                 <Slider
                   value={priceRange}
-                  onValueChange={setPriceRange}
+                  onValueChange={(value) => {
+                    setPriceRange(value);
+                    handleFilterChange();
+                  }}
                   max={20000}
                   step={500}
                   className="w-full"
@@ -174,7 +193,10 @@ const CatalogSection = ({
                     <Checkbox
                       id={brand}
                       checked={selectedBrands.includes(brand)}
-                      onCheckedChange={() => toggleBrand(brand)}
+                      onCheckedChange={() => {
+                        toggleBrand(brand);
+                        handleFilterChange();
+                      }}
                     />
                     <Label htmlFor={brand} className="text-sm cursor-pointer">
                       {brand}
@@ -192,7 +214,10 @@ const CatalogSection = ({
                     <Checkbox
                       id={volume}
                       checked={selectedVolumes.includes(volume)}
-                      onCheckedChange={() => toggleVolume(volume)}
+                      onCheckedChange={() => {
+                        toggleVolume(volume);
+                        handleFilterChange();
+                      }}
                     />
                     <Label htmlFor={volume} className="text-sm cursor-pointer">
                       {volume}
@@ -207,7 +232,10 @@ const CatalogSection = ({
                 <Checkbox
                   id="available"
                   checked={showOnlyAvailable}
-                  onCheckedChange={(checked) => setShowOnlyAvailable(checked as boolean)}
+                  onCheckedChange={(checked) => {
+                    setShowOnlyAvailable(checked as boolean);
+                    handleFilterChange();
+                  }}
                 />
                 <Label htmlFor="available" className="text-sm cursor-pointer font-semibold">
                   Только в наличии
@@ -252,7 +280,7 @@ const CatalogSection = ({
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {filteredPerfumes.map(perfume => (
+              {currentPerfumes.map(perfume => (
                 <PerfumeCard 
                   key={perfume.id} 
                   perfume={perfume} 
@@ -270,6 +298,83 @@ const CatalogSection = ({
                 <Icon name="Search" size={48} className="text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg text-muted-foreground">Товары не найдены</p>
                 <p className="text-sm text-muted-foreground mt-2">Попробуйте изменить фильтры</p>
+              </div>
+            )}
+            
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <Icon name="ChevronLeft" size={16} />
+                </Button>
+                
+                <div className="flex gap-1">
+                  {currentPage > 2 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(1)}
+                      >
+                        1
+                      </Button>
+                      {currentPage > 3 && <span className="px-2 py-1">...</span>}
+                    </>
+                  )}
+                  
+                  {currentPage > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                      {currentPage - 1}
+                    </Button>
+                  )}
+                  
+                  <Button
+                    variant="default"
+                    size="sm"
+                  >
+                    {currentPage}
+                  </Button>
+                  
+                  {currentPage < totalPages && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                      {currentPage + 1}
+                    </Button>
+                  )}
+                  
+                  {currentPage < totalPages - 1 && (
+                    <>
+                      {currentPage < totalPages - 2 && <span className="px-2 py-1">...</span>}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(totalPages)}
+                      >
+                        {totalPages}
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <Icon name="ChevronRight" size={16} />
+                </Button>
               </div>
             )}
           </div>

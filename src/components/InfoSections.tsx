@@ -23,7 +23,7 @@ const InfoSections = () => {
                     <Icon name="Star" size={20} className="text-white md:w-6 md:h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">С 1875 года</h3>
+                    <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">С 2018 года</h3>
                     <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                       Более полутора веков мы создаём парфюмерные композиции, 
                       которые рассказывают истории и пробуждают эмоции.
